@@ -8,6 +8,9 @@ class Summary:
     def __init__(self, itemPricePairs):
         self.itemPricePairs = itemPricePairs
 
+    def getRawSummary(self):
+        return RawSummary(self.itemPricePairs).getSummary()
+
     def getFormattedSummary(self):
         seriesData = RawSummary(self.itemPricePairs).getSummary()
         return FormattedSummary(seriesData).getSummary()

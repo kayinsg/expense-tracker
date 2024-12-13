@@ -11,7 +11,7 @@ import pendulum
 from SupportInterfaces.FontFormatter import FontFormatter
 from SupportInterfaces.TableConstructor import TableCreator
 from SupportInterfaces.TypeChecker import TypeChecker
-from SupportInterfaces.SummaryConstructor import Summary
+from SupportInterfaces.SummaryConstructor import RawSummary, Summary
 from SupportInterfaces.dataTransferObjects import FontProfile, SpreadsheetDetails
 from SupportInterfaces.utils import readLinesFromFile
 
@@ -26,7 +26,7 @@ class TableFacade:
             self.contentWithinFile
         ).categorizeData()
 
-    def getFlatTextFileList(self):
+    def getFlatTextFileList(self) -> list[str]:
         return self.contentWithinFile
 
     def getRawTable(self):
@@ -205,7 +205,7 @@ class SpreadsheetColumnFormatter:
         self.spreadsheetDetails = spreadsheetDetails
         self.dataRows = self.spreadsheetDetails.worksheet.max_row
 
-    def fetchFromattedWorkSheet(self):
+    def fetchFormattedWorkSheet(self):
         return self.formatColumns()
 
     def formatColumns(self):
@@ -283,33 +283,57 @@ class SpreadsheetColumnFormatter:
 
 
 flatTextFile = "/home/kayinfire/Documents/moreCompletedPurchaseList.txt"
-
-
-rawTable = TableFacade(flatTextFile).getRawTable()
-viewTable = TableFacade(flatTextFile).getFormattedTable()
-
-
-flatTextFileContent: list[str] = TableFacade(flatTextFile).getFlatTextFileList()
-
-itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
-dataSummary = Summary(itemPricePairs).getFormattedSummary()
-
 spreadsheetFilePath = "/home/kayinfire/Downloads/inventory.xlsx"
-preparedSpreadsheet = WorksheetCreator().consolidateSpreadsheetDetails(
-    spreadsheetFilePath
-)
-spreadsheetToBeWrittenTo = SpreadsheetWriter(
-    preparedSpreadsheet,
-    viewTable,
-    dataSummary
 
-)
 
-writtenSpreadSheet = spreadsheetToBeWrittenTo.captureStateAfterWrite()
+def getTables():
+    rawTable = TableFacade(flatTextFile).getRawTable()
+    viewTable = TableFacade(flatTextFile).getFormattedTable()
+    return {
+        "Raw Table" : rawTable,
+        "Formatted Table" : viewTable,
+    }
 
-spreadsheetToBeFormatted = SpreadsheetColumnFormatter(preparedSpreadsheet)
-formattedSpreadSheet = spreadsheetToBeFormatted.fetchFromattedWorkSheet()
+
+def getSummaries():
+    flatTextFileContent = TableFacade(flatTextFile).getFlatTextFileList()
+    itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
+    rawSummary = Summary(itemPricePairs).getRawSummary()
+    formattedSummary = Summary(itemPricePairs).getFormattedSummary()
+    return {
+        "Raw Summary": rawSummary,
+        "Formatted Summary" : formattedSummary,
+    }
+
+
+def createDateWorksheet():
+    preparedSpreadsheet = WorksheetCreator().consolidateSpreadsheetDetails(
+        spreadsheetFilePath
+    )
+    return preparedSpreadsheet
+
+
+def writtenSpreadSheet(spreadsheetDetails):
+    formattedTable = getTables()['Formatted Table']
+    formattedSummary = getSummaries()['Formatted Summary']
+
+    spreadsheetToBeWrittenTo = SpreadsheetWriter(
+        spreadsheetDetails,
+        formattedTable,
+        formattedSummary
+
+    )
+    writtenSpreadSheet = spreadsheetToBeWrittenTo.captureStateAfterWrite()
+    return writtenSpreadSheet
+
+
+def formattedSpreadSheet(spreadsheetDetails):
+    spreadsheetToBeFormatted = SpreadsheetColumnFormatter(spreadsheetDetails)
+    formattedSpreadsheetDetails = spreadsheetToBeFormatted.fetchFormattedWorkSheet()
+    return formattedSpreadsheetDetails.workbook.save(
+        spreadsheetDetails.filePath
+    )
+
 
 end_time = time.perf_counter()
 elapsed_time = end_time - start_time
-preparedSpreadsheet.workbook.save(spreadsheetFilePath)
