@@ -11,13 +11,10 @@ import pendulum
 from SupportInterfaces.FontFormatter import FontFormatter
 from SupportInterfaces.TableConstructor import TableCreator
 from SupportInterfaces.TypeChecker import TypeChecker
-from SupportInterfaces.SummaryConstructor import RawSummary, Summary
+from SupportInterfaces.SummaryConstructor import Summary
 from SupportInterfaces.dataTransferObjects import FontProfile, SpreadsheetDetails
 from SupportInterfaces.utils import readLinesFromFile
 from paths import flatTextFile, spreadsheetPath
-
-import time
-start_time = time.perf_counter()
 
 
 class TableFacade:
@@ -327,7 +324,3 @@ def formattedSpreadSheet(spreadsheetDetails):
     return formattedSpreadsheetDetails.workbook.save(
         spreadsheetDetails.filePath
     )
-
-
-end_time = time.perf_counter()
-elapsed_time = end_time - start_time
