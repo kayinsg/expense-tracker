@@ -14,6 +14,7 @@ from SupportInterfaces.TypeChecker import TypeChecker
 from SupportInterfaces.SummaryConstructor import RawSummary, Summary
 from SupportInterfaces.dataTransferObjects import FontProfile, SpreadsheetDetails
 from SupportInterfaces.utils import readLinesFromFile
+from paths import flatTextFile, spreadsheetPath
 
 import time
 start_time = time.perf_counter()
@@ -196,7 +197,7 @@ class SpreadsheetWriter:
         self.spreadsheetDetails.worksheet.append(summaryValues)
 
 
-class SpreadsheetColumnFormatter:
+class SpreadsheetFormatter:
     def __init__(
         self,
         spreadsheetDetails : SpreadsheetDetails,
@@ -282,10 +283,6 @@ class SpreadsheetColumnFormatter:
                 )
 
 
-flatTextFile = "/home/kayinfire/Documents/moreCompletedPurchaseList.txt"
-spreadsheetFilePath = "/home/kayinfire/Downloads/inventory.xlsx"
-
-
 def getTables():
     rawTable = TableFacade(flatTextFile).getRawTable()
     viewTable = TableFacade(flatTextFile).getFormattedTable()
@@ -307,10 +304,7 @@ def getSummaries():
 
 
 def createDateWorksheet():
-    preparedSpreadsheet = WorksheetCreator().consolidateSpreadsheetDetails(
-        spreadsheetFilePath
-    )
-    return preparedSpreadsheet
+    return WorksheetCreator().consolidateSpreadsheetDetails(spreadsheetPath)
 
 
 def writtenSpreadSheet(spreadsheetDetails):
@@ -328,7 +322,7 @@ def writtenSpreadSheet(spreadsheetDetails):
 
 
 def formattedSpreadSheet(spreadsheetDetails):
-    spreadsheetToBeFormatted = SpreadsheetColumnFormatter(spreadsheetDetails)
+    spreadsheetToBeFormatted = SpreadsheetFormatter(spreadsheetDetails)
     formattedSpreadsheetDetails = spreadsheetToBeFormatted.fetchFormattedWorkSheet()
     return formattedSpreadsheetDetails.workbook.save(
         spreadsheetDetails.filePath
