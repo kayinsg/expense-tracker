@@ -19,13 +19,9 @@ from paths import flatTextFile, spreadsheetPath
 
 class TableFacade:
     def __init__(self, flatTextPath: str):
-        self.contentWithinFile = readLinesFromFile(flatTextPath)
         self.itemPricePairs = DataExtractor(
-            self.contentWithinFile
+            readLinesFromFile(flatTextPath)
         ).categorizeData()
-
-    def getFlatTextFileList(self) -> list[str]:
-        return self.contentWithinFile
 
     def getRawTable(self):
         return TableCreator(self.itemPricePairs).makeTable("raw")
@@ -281,8 +277,9 @@ class SpreadsheetFormatter:
 
 
 def getTables():
-    rawTable = TableFacade(flatTextFile).getRawTable()
-    viewTable = TableFacade(flatTextFile).getFormattedTable()
+    table = TableFacade(flatTextFile)
+    rawTable = table.getRawTable()
+    viewTable = table.getFormattedTable()
     return {
         "Raw Table" : rawTable,
         "Formatted Table" : viewTable,
@@ -290,10 +287,11 @@ def getTables():
 
 
 def getSummaries():
-    flatTextFileContent = TableFacade(flatTextFile).getFlatTextFileList()
+    flatTextFileContent = readLinesFromFile(flatTextFile)
     itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
-    rawSummary = Summary(itemPricePairs).getRawSummary()
-    formattedSummary = Summary(itemPricePairs).getFormattedSummary()
+    summary = Summary(itemPricePairs)
+    rawSummary = summary.getRawSummary()
+    formattedSummary = summary.getFormattedSummary()
     return {
         "Raw Summary": rawSummary,
         "Formatted Summary" : formattedSummary,
