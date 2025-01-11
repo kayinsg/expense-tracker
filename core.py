@@ -110,6 +110,7 @@ class DataExtractor:
 
 
 class WorksheetCreator:
+
     def consolidateSpreadsheetDetails(self, filePath):
         workbook = self.getWorkbook(filePath)
         worksheet = self.createDateWorksheet(workbook)
@@ -276,26 +277,30 @@ class SpreadsheetFormatter:
                 )
 
 
-def getTables():
-    table = TableFacade(flatTextFile)
-    rawTable = table.getRawTable()
-    viewTable = table.getFormattedTable()
-    return {
-        "Raw Table" : rawTable,
-        "Formatted Table" : viewTable,
-    }
-
-
-def getSummaries():
+def getFormattedData():
     flatTextFileContent = readLinesFromFile(flatTextFile)
     itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
     summary = Summary(itemPricePairs)
-    rawSummary = summary.getRawSummary()
     formattedSummary = summary.getFormattedSummary()
+    
+    table = TableFacade(flatTextFile)
+    viewTable = table.getFormattedTable()
+    
     return {
-        "Raw Summary": rawSummary,
-        "Formatted Summary" : formattedSummary,
+        "Formatted Table": viewTable,
+        "Formatted Summary": formattedSummary,
     }
+
+def getRawData():
+    rawTable = TableFacade(flatTextFile).getRawTable()
+    itemPricePairs = DataExtractor(readLinesFromFile(flatTextFile)).categorizeData()
+    summary = Summary(itemPricePairs)
+    rawSummary = summary.getRawSummary()
+    
+    return {
+        "Raw Table": rawTable,
+        "Raw Summary": rawSummary,
+        }
 
 
 def createDateWorksheet():
@@ -303,8 +308,9 @@ def createDateWorksheet():
 
 
 def writtenSpreadSheet(spreadsheetDetails):
-    formattedTable = getTables()['Formatted Table']
-    formattedSummary = getSummaries()['Formatted Summary']
+    formattedData = getFormattedData()
+    formattedTable = formattedData['Formatted Table']
+    formattedSummary = formattedData['Formatted Summary']
 
     spreadsheetToBeWrittenTo = SpreadsheetWriter(
         spreadsheetDetails,
