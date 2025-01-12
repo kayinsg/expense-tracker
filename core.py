@@ -1,4 +1,5 @@
 from openpyxl import load_workbook
+import openpyxl
 from openpyxl.styles import Alignment
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.worksheet.worksheet import Worksheet as ExcelWorksheet
@@ -23,10 +24,10 @@ class TableFacade:
             readLinesFromFile(flatTextPath)
         ).categorizeData()
 
-    def getRawTable(self):
+    def getRawTable(self) -> DataFrame:
         return TableCreator(self.itemPricePairs).makeTable("raw")
 
-    def getFormattedTable(self):
+    def getFormattedTable(self) -> DataFrame:
         return TableCreator(self.itemPricePairs).makeTable("view")
 
 
@@ -68,13 +69,13 @@ class DataExtractor:
 
         return itemPriceInformation
 
-    def _lineComprisesStrings(self, entry) -> bool:
+    def _lineComprisesStrings(self, entry: str) -> bool:
         entryType = TypeChecker(entry).dataType
         if entryType == "String":
             return True
         return False
 
-    def _lineComprisesNumbers(self, entry) -> bool:
+    def _lineComprisesNumbers(self, entry: str) -> bool:
         entryType = TypeChecker(entry).dataType
         if entryType == "Integer":
             return True
@@ -82,7 +83,7 @@ class DataExtractor:
             return True
         return False
 
-    def _convertPricesToNumericDataType(self, price) -> int | float | None:
+    def _convertPricesToNumericDataType(self, price: str) -> int | float | None:
         dataTypeOfPrice = TypeChecker(price).dataType
         if dataTypeOfPrice == "Integer":
             return int(price)
@@ -91,13 +92,13 @@ class DataExtractor:
         else:
             return None
 
-    def _calculateAfterTaxPrices(self, price):
+    def _calculateAfterTaxPrices(self, price: int):
         countryTaxRateInDecimal = 0.13
         taxMultiplier = 1 + countryTaxRateInDecimal
         afterTaxPrice = taxMultiplier * price
         return afterTaxPrice
 
-    def _calculateTaxesPaidPerItem(self, grossPrice, afterTaxPrice):
+    def _calculateTaxesPaidPerItem(self, grossPrice: int, afterTaxPrice: int) -> list[int] :
         pricePairs = list(zip(grossPrice, afterTaxPrice))
 
         taxesPaidPerItem = list()
@@ -111,7 +112,7 @@ class DataExtractor:
 
 class WorksheetCreator:
 
-    def consolidateSpreadsheetDetails(self, filePath):
+    def consolidateSpreadsheetDetails(self, filePath: str) -> SpreadsheetDetails:
         workbook = self.getWorkbook(filePath)
         worksheet = self.createDateWorksheet(workbook)
         return SpreadsheetDetails(
@@ -120,13 +121,13 @@ class WorksheetCreator:
             worksheet
         )
 
-    def getWorkbook(self, filename):
+    def getWorkbook(self, filename: str) -> openpyxl.Workbook:
         Workbook = load_workbook(
             filename, keep_vba=True, keep_links=True
         )
         return Workbook
 
-    def createDateWorksheet(self, workbook) -> ExcelWorksheet:
+    def createDateWorksheet(self, workbook: openpyxl.Workbook) -> ExcelWorksheet:
         formattedCurrentDate = pendulum.now().format("MMM.DD.YYYY")
         worksheetName = f"{formattedCurrentDate} Budget"
         dateWorksheet = workbook.create_sheet(worksheetName, 0)
@@ -163,7 +164,7 @@ class SpreadsheetWriter:
             self.spreadsheetDetails.worksheet
         )
 
-    def _writeTabularDataToWorksheet(self, table) -> None:
+    def _writeTabularDataToWorksheet(self, table: DataFrame) -> None:
         worksheet = self.spreadsheetDetails.worksheet
         workbook = self.spreadsheetDetails.workbook
 
@@ -176,7 +177,7 @@ class SpreadsheetWriter:
 
             worksheet.append(row)
 
-    def writeSummaryToWorksheet(self, series):
+    def writeSummaryToWorksheet(self, series: Series) -> None:
         summaryHeaders = list()
         summaryValues = list()
 
@@ -200,10 +201,10 @@ class SpreadsheetFormatter:
         self.spreadsheetDetails = spreadsheetDetails
         self.dataRows = self.spreadsheetDetails.worksheet.max_row
 
-    def fetchFormattedWorkSheet(self):
+    def fetchFormattedWorkSheet(self) -> SpreadsheetDetails:
         return self.formatColumns()
 
-    def formatColumns(self):
+    def formatColumns(self) -> SpreadsheetDetails:
         workbook = self.spreadsheetDetails.workbook
         filePath = self.spreadsheetDetails.filePath
 
@@ -220,7 +221,7 @@ class SpreadsheetFormatter:
             self.spreadsheetDetails.worksheet,
         )
 
-    def changeHeaderFont(self):
+    def changeHeaderFont(self) -> None:
         headerFontProfile = FontProfile(
             "Georgia",
             18,
@@ -229,7 +230,7 @@ class SpreadsheetFormatter:
         fontFormatter = FontFormatter(self.spreadsheetDetails)
         fontFormatter.changeHeaderFont(headerFontProfile)
 
-    def changeBodyFont(self):
+    def changeBodyFont(self) -> None:
         bodyFontProfile = FontProfile(
             "Helvetica Neue",
             12.8,
@@ -238,7 +239,7 @@ class SpreadsheetFormatter:
         fontFormatter = FontFormatter(self.spreadsheetDetails)
         fontFormatter.changeBodyFont(bodyFontProfile)
 
-    def adjustWidthOfColumnsToFit(self):
+    def adjustWidthOfColumnsToFit(self) -> None:
         worksheet = self.spreadsheetDetails.worksheet
 
         for column in worksheet.iter_cols():
@@ -253,7 +254,7 @@ class SpreadsheetFormatter:
 
             worksheet.column_dimensions[currentColumnIndex].width = maxLengthOfCellInColumn + 8
 
-    def padRowHeight(self):
+    def padRowHeight(self) -> None:
         worksheet = self.spreadsheetDetails.worksheet
         idealRowHeight = 27
 
@@ -262,7 +263,7 @@ class SpreadsheetFormatter:
         for row in range(1, dataRows):
             worksheet.row_dimensions[row].height = idealRowHeight
 
-    def alignCellsBottomLeft(self):
+    def alignCellsBottomLeft(self) -> None:
         worksheet = self.spreadsheetDetails.worksheet
         lastDataColumnAccountedForRange = worksheet.max_column
 
@@ -328,3 +329,5 @@ def formattedSpreadSheet(spreadsheetDetails):
     return formattedSpreadsheetDetails.workbook.save(
         spreadsheetDetails.filePath
     )
+
+
