@@ -35,18 +35,18 @@ class DataExtractor:
     def __init__(self, listOfLinesInFile: list[str]):
         self.listOfLinesInFile = listOfLinesInFile
 
-    def categorizeData(self) -> list[tuple[str, int | float | None]]:
+    def categorizeData(self) ->  list[tuple[str, int | float, float, int]]:
         listOfLinesInFile = self.listOfLinesInFile
 
         items: list[str] = list(filter(
             self._lineComprisesStrings,
             listOfLinesInFile
         ))
-        pricesRepresentedAsStrings: list[str] = list(filter(
+        pricesRepresentedAsStrings = list(filter(
             self._lineComprisesNumbers,
             listOfLinesInFile
         ))
-        numericPrices: list[int | float | None] = list(map(
+        numericPrices = list(map(
             self._convertPricesToNumericDataType,
             pricesRepresentedAsStrings
         ))
@@ -83,23 +83,27 @@ class DataExtractor:
             return True
         return False
 
-    def _convertPricesToNumericDataType(self, price: str) -> int | float | None:
+    def _convertPricesToNumericDataType(self, price: str) -> int | float:
         dataTypeOfPrice = TypeChecker(price).dataType
         if dataTypeOfPrice == "Integer":
             return int(price)
         elif dataTypeOfPrice == "Decimal":
             return float(price)
-        else:
-            return None
+        return 0
 
-    def _calculateAfterTaxPrices(self, price: int):
+    def _calculateAfterTaxPrices(self, price: int | float):
         countryTaxRateInDecimal = 0.13
         taxMultiplier = 1 + countryTaxRateInDecimal
         afterTaxPrice = taxMultiplier * price
         return afterTaxPrice
 
-    def _calculateTaxesPaidPerItem(self, grossPrice: int, afterTaxPrice: int) -> list[int] :
-        pricePairs = list(zip(grossPrice, afterTaxPrice))
+    def _calculateTaxesPaidPerItem(
+        self,
+        grossPrices: list[int | float],
+        afterTaxPrices: list[int | float],
+    ) -> list[int] :
+
+        pricePairs = list(zip(grossPrices, afterTaxPrices))
 
         taxesPaidPerItem = list()
 
