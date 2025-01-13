@@ -1,3 +1,4 @@
+import os
 from openpyxl import load_workbook
 import openpyxl
 from openpyxl.styles import Alignment
@@ -119,6 +120,7 @@ class WorksheetCreator:
     def consolidateSpreadsheetDetails(self, filePath: str) -> SpreadsheetDetails:
         workbook = self.getWorkbook(filePath)
         worksheet = self.createDateWorksheet(workbook)
+        workbook.save(spreadsheetPath)
         return SpreadsheetDetails(
             filePath,
             workbook,
@@ -126,10 +128,17 @@ class WorksheetCreator:
         )
 
     def getWorkbook(self, filename: str) -> openpyxl.Workbook:
-        Workbook = load_workbook(
-            filename, keep_vba=True, keep_links=True
-        )
-        return Workbook
+        if os.path.exists(filename):
+            workbook = load_workbook(
+                filename, keep_vba=True, keep_links=True
+            )
+            return workbook
+        else:
+            workbook = openpyxl.Workbook()
+            dateWorksheet = self.createDateWorksheet(workbook)
+            workbook.active = dateWorksheet
+            workbook.save(filename)
+            return workbook
 
     def createDateWorksheet(self, workbook: openpyxl.Workbook) -> ExcelWorksheet:
         formattedCurrentDate = pendulum.now().format("MMM.DD.YYYY")
@@ -333,5 +342,4 @@ def formattedSpreadSheet(spreadsheetDetails):
     return formattedSpreadsheetDetails.workbook.save(
         spreadsheetDetails.filePath
     )
-
 
