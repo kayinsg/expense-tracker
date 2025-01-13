@@ -129,16 +129,16 @@ class WorksheetCreator:
 
     def getWorkbook(self, filename: str) -> openpyxl.Workbook:
         if os.path.exists(filename):
-            workbook = load_workbook(
+            return load_workbook(
                 filename, keep_vba=True, keep_links=True
             )
-            return workbook
         else:
-            workbook = openpyxl.Workbook()
-            dateWorksheet = self.createDateWorksheet(workbook)
-            workbook.active = dateWorksheet
-            workbook.save(filename)
-            return workbook
+            self.createWorkbook(filename)
+
+    def createWorkbook(self, filename):
+        workbook = openpyxl.Workbook()
+        workbook.save(filename)
+        return workbook
 
     def createDateWorksheet(self, workbook: openpyxl.Workbook) -> ExcelWorksheet:
         formattedCurrentDate = pendulum.now().format("MMM.DD.YYYY")
@@ -342,4 +342,3 @@ def formattedSpreadSheet(spreadsheetDetails):
     return formattedSpreadsheetDetails.workbook.save(
         spreadsheetDetails.filePath
     )
-
