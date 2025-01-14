@@ -117,8 +117,17 @@ class DataExtractor:
 
 class WorksheetCreator:
 
+    @classmethod
+    def getWorkbook(cls, filename: str) -> openpyxl.Workbook:
+        if os.path.exists(filename):
+            return load_workbook(
+                filename, keep_vba=True, keep_links=True
+            )
+        else:
+            return openpyxl.Workbook()
+
     def consolidateSpreadsheetDetails(self, filePath: str) -> SpreadsheetDetails:
-        workbook = self.getWorkbook(filePath)
+        workbook = WorksheetCreator.workbook(filePath)
         self.removeUndesiredWorksheets(workbook)
         worksheet = self.createDateWorksheet(workbook)
         workbook.save(spreadsheetPath)
@@ -127,14 +136,6 @@ class WorksheetCreator:
             workbook,
             worksheet
         )
-
-    def getWorkbook(self, filename: str) -> openpyxl.Workbook:
-        if os.path.exists(filename):
-            return load_workbook(
-                filename, keep_vba=True, keep_links=True
-            )
-        else:
-            return openpyxl.Workbook()
 
     def removeUndesiredWorksheets(self, workbook):
         worksheetKeyword = "Budget"
