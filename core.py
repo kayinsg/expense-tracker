@@ -123,7 +123,9 @@ class SpreadsheetCreator:
             return load_workbook(
                 filename, keep_vba=True, keep_links=True
             )
-        except ValueError:
+        except ValueError as InvalidFileException:
+            print(InvalidFileException)
+            print('[ ERROR ] File Not Found Creating One Now')
             return openpyxl.Workbook()
 
     def get(self, filePath: str) -> SpreadsheetDetails:
