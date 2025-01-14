@@ -115,7 +115,7 @@ class DataExtractor:
         return taxesPaidPerItem
 
 
-class WorksheetCreator:
+class SpreadsheetCreator:
 
     @classmethod
     def workbook(cls, filename: str) -> openpyxl.Workbook:
@@ -127,7 +127,7 @@ class WorksheetCreator:
             return openpyxl.Workbook()
 
     def consolidateSpreadsheetDetails(self, filePath: str) -> SpreadsheetDetails:
-        workbook = WorksheetCreator.workbook(filePath)
+        workbook = SpreadsheetCreator.workbook(filePath)
         self.removeUndesiredWorksheets(workbook)
         worksheet = self.createDateWorksheet(workbook)
         workbook.save(spreadsheetPath)
@@ -325,7 +325,7 @@ def getRawData():
 
 
 def createDateWorksheet():
-    return WorksheetCreator().consolidateSpreadsheetDetails(spreadsheetPath)
+    return SpreadsheetCreator().consolidateSpreadsheetDetails(spreadsheetPath)
 
 
 def writtenSpreadSheet(spreadsheetDetails):
