@@ -126,7 +126,7 @@ class SpreadsheetCreator:
         else:
             return openpyxl.Workbook()
 
-    def consolidateSpreadsheetDetails(self, filePath: str) -> SpreadsheetDetails:
+    def get(self, filePath: str) -> SpreadsheetDetails:
         workbook = SpreadsheetCreator.workbook(filePath)
         self._removeUndesiredWorksheets(workbook)
         worksheet = self._createDateWorksheet(workbook)
@@ -325,7 +325,7 @@ def getRawData():
 
 
 def createDateWorksheet():
-    return SpreadsheetCreator().consolidateSpreadsheetDetails(spreadsheetPath)
+    return SpreadsheetCreator().get(spreadsheetPath)
 
 
 def writtenSpreadSheet(spreadsheetDetails):
