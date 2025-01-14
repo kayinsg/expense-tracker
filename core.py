@@ -118,7 +118,7 @@ class DataExtractor:
 class WorksheetCreator:
 
     @classmethod
-    def getWorkbook(cls, filename: str) -> openpyxl.Workbook:
+    def workbook(cls, filename: str) -> openpyxl.Workbook:
         if os.path.exists(filename):
             return load_workbook(
                 filename, keep_vba=True, keep_links=True
