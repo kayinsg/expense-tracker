@@ -134,12 +134,7 @@ class WorksheetCreator:
                 filename, keep_vba=True, keep_links=True
             )
         else:
-            self.createWorkbook(filename)
-
-    def createWorkbook(self, filename):
-        workbook = openpyxl.Workbook()
-        workbook.save(filename)
-        return workbook
+            return openpyxl.Workbook()
 
     def removeUndesiredWorksheets(self, workbook):
         worksheetKeyword = "Budget"
