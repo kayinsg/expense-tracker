@@ -119,11 +119,11 @@ class SpreadsheetCreator:
 
     @classmethod
     def workbook(cls, filename: str) -> openpyxl.Workbook:
-        if os.path.exists(filename):
+        try:
             return load_workbook(
                 filename, keep_vba=True, keep_links=True
             )
-        else:
+        except ValueError:
             return openpyxl.Workbook()
 
     def get(self, filePath: str) -> SpreadsheetDetails:
