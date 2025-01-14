@@ -119,6 +119,7 @@ class WorksheetCreator:
 
     def consolidateSpreadsheetDetails(self, filePath: str) -> SpreadsheetDetails:
         workbook = self.getWorkbook(filePath)
+        self.removeUndesiredWorksheets(workbook)
         worksheet = self.createDateWorksheet(workbook)
         workbook.save(spreadsheetPath)
         return SpreadsheetDetails(
@@ -139,6 +140,16 @@ class WorksheetCreator:
         workbook = openpyxl.Workbook()
         workbook.save(filename)
         return workbook
+
+    def removeUndesiredWorksheets(self, workbook):
+        worksheetKeyword = "Budget"
+        listOfWorksheets = workbook.worksheets
+        for worksheet in listOfWorksheets:
+            worksheetName = str(worksheet)
+            if worksheetKeyword in worksheetName:
+                pass
+            else:
+                workbook.remove(worksheet)
 
     def createDateWorksheet(self, workbook: openpyxl.Workbook) -> ExcelWorksheet:
         formattedCurrentDate = pendulum.now().format("MMM.DD.YYYY")
@@ -342,3 +353,6 @@ def formattedSpreadSheet(spreadsheetDetails):
     return formattedSpreadsheetDetails.workbook.save(
         spreadsheetDetails.filePath
     )
+
+
+formattedSpreadSheet(writtenSpreadSheet(createDateWorksheet()))
