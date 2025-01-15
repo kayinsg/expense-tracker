@@ -14,7 +14,7 @@ from SupportInterfaces.FontFormatter import FontFormatter
 from SupportInterfaces.TableConstructor import TableCreator
 from SupportInterfaces.TypeChecker import TypeChecker
 from SupportInterfaces.SummaryConstructor import Summary
-from SupportInterfaces.dataTransferObjects import FontProfile, SpreadsheetDetails
+from SupportInterfaces.dataTransferObjects import FontProfile, SpreadsheetDetails, Data
 from SupportInterfaces.utils import readLinesFromFile
 from paths import flatTextFile, spreadsheetPath
 
@@ -159,23 +159,18 @@ class SpreadsheetWriter:
     def __init__(
         self,
         spreadsheetDetails: SpreadsheetDetails,
-        table: DataFrame,
-        summary: Series
+        data: Data
     ):
         self.spreadsheetDetails = spreadsheetDetails
         self.worksheet = spreadsheetDetails.worksheet
-        self.table = table
-        self.summary = summary
+        self.data = data
 
     def captureStateAfterWrite(self) -> SpreadsheetDetails:
-        table = self.table
-        summary = self.summary
-
         workbook = self.spreadsheetDetails.workbook
         spreadSheetFile = self.spreadsheetDetails.filePath
 
-        self._writeTabularDataToWorksheet(table)
-        self.writeSummaryToWorksheet(summary)
+        self._writeTabularDataToWorksheet(self.data.table)
+        self.writeSummaryToWorksheet(self.data.summary)
 
         workbook.save(spreadSheetFile)
 
@@ -308,21 +303,16 @@ def getFormattedData():
     table = TableFacade(flatTextFile)
     viewTable = table.getFormattedTable()
     
-    return {
-        "Formatted Table": viewTable,
-        "Formatted Summary": formattedSummary,
-    }
+    return Data(viewTable, formattedSummary)
 
 def getRawData():
     rawTable = TableFacade(flatTextFile).getRawTable()
     itemPricePairs = DataExtractor(readLinesFromFile(flatTextFile)).categorizeData()
+
     summary = Summary(itemPricePairs)
     rawSummary = summary.getRawSummary()
-    
-    return {
-        "Raw Table": rawTable,
-        "Raw Summary": rawSummary,
-        }
+
+    return Data(rawTable, rawSummary)
 
 
 def createDateWorksheet():
@@ -331,16 +321,13 @@ def createDateWorksheet():
 
 def writtenSpreadSheet(spreadsheetDetails):
     formattedData = getFormattedData()
-    formattedTable = formattedData['Formatted Table']
-    formattedSummary = formattedData['Formatted Summary']
 
     spreadsheetToBeWrittenTo = SpreadsheetWriter(
         spreadsheetDetails,
-        formattedTable,
-        formattedSummary
-
+        formattedData
     )
     writtenSpreadSheet = spreadsheetToBeWrittenTo.captureStateAfterWrite()
+
     return writtenSpreadSheet
 
 

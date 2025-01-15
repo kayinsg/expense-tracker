@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 from openpyxl import Workbook as ExcelWorkbook
 from openpyxl.worksheet.worksheet import Worksheet as ExcelWorksheet
+from pandas import DataFrame, Series
 
 
 class ColumnDetails(NamedTuple):
@@ -26,6 +27,11 @@ class FontProfile(NamedTuple):
 class RowInfo:
     headerRowNumbers : list[int]
     bodyRowNumbers   : list[int]
+
+class Data(NamedTuple):
+    table: DataFrame
+    summary: Series
+
 
 
 NonIterable = str | float | int
