@@ -1,19 +1,11 @@
-import os
-from openpyxl import load_workbook
-import openpyxl
-from openpyxl.styles import Alignment
-from openpyxl.utils.dataframe import dataframe_to_rows
-from openpyxl.worksheet.worksheet import Worksheet as ExcelWorksheet
 
 from pandas import DataFrame
-from pandas import Series
-import pendulum
 
 
 from SupportInterfaces.TableConstructor import TableCreator
 from SupportInterfaces.TypeChecker import TypeChecker
 from SupportInterfaces.SummaryConstructor import Summary
-from SupportInterfaces.dataTransferObjects import FontProfile, SpreadsheetDetails, Data
+from SupportInterfaces.dataTransferObjects import Data
 from SupportInterfaces.utils import readLinesFromFile
 from paths import flatTextFile, spreadsheetPath
 from spreadsheet import Spreadsheet
