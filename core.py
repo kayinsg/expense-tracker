@@ -10,13 +10,13 @@ from pandas import Series
 import pendulum
 
 
-from SupportInterfaces.FontFormatter import FontFormatter
 from SupportInterfaces.TableConstructor import TableCreator
 from SupportInterfaces.TypeChecker import TypeChecker
 from SupportInterfaces.SummaryConstructor import Summary
 from SupportInterfaces.dataTransferObjects import FontProfile, SpreadsheetDetails, Data
 from SupportInterfaces.utils import readLinesFromFile
 from paths import flatTextFile, spreadsheetPath
+from spreadsheet import Spreadsheet
 
 
 class TableFacade:
@@ -115,185 +115,6 @@ class DataExtractor:
         return taxesPaidPerItem
 
 
-class SpreadsheetCreator:
-
-    @classmethod
-    def workbook(cls, filename: str) -> openpyxl.Workbook:
-        try:
-            return load_workbook(
-                filename, keep_vba=True, keep_links=True
-            )
-        except FileNotFoundError:
-            print('[ ERROR ] File Not Found Creating One Now')
-            return openpyxl.Workbook()
-
-    def get(self, filePath: str) -> SpreadsheetDetails:
-        workbook = SpreadsheetCreator.workbook(filePath)
-        self._removeUndesiredWorksheets(workbook)
-        worksheet = self._createDateWorksheet(workbook)
-        workbook.save(spreadsheetPath)
-        return SpreadsheetDetails(
-            filePath,
-            workbook,
-            worksheet
-        )
-
-    def _removeUndesiredWorksheets(self, workbook):
-        worksheetKeyword = "Budget"
-        listOfWorksheets = workbook.worksheets
-        for worksheet in listOfWorksheets:
-            worksheetName = str(worksheet)
-            if worksheetKeyword in worksheetName:
-                pass
-            else:
-                workbook.remove(worksheet)
-
-    def _createDateWorksheet(self, workbook: openpyxl.Workbook) -> ExcelWorksheet:
-        formattedCurrentDate = pendulum.now().format("MMM.DD.YYYY")
-        worksheetName = f"{formattedCurrentDate} Budget"
-        dateWorksheet = workbook.create_sheet(worksheetName, 0)
-        return dateWorksheet
-
-
-class SpreadsheetWriter:
-    def __init__(
-        self,
-        spreadsheetDetails: SpreadsheetDetails,
-        data: Data
-    ):
-        self.spreadsheetDetails = spreadsheetDetails
-        self.worksheet = spreadsheetDetails.worksheet
-        self.data = data
-
-    def captureStateAfterWrite(self) -> SpreadsheetDetails:
-        workbook = self.spreadsheetDetails.workbook
-        spreadSheetFile = self.spreadsheetDetails.filePath
-
-        self._writeTabularDataToWorksheet(self.data.table)
-        self.writeSummaryToWorksheet(self.data.summary)
-
-        workbook.save(spreadSheetFile)
-
-        return SpreadsheetDetails(
-            spreadSheetFile,
-            workbook,
-            self.spreadsheetDetails.worksheet
-        )
-
-    def _writeTabularDataToWorksheet(self, table: DataFrame) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
-        workbook = self.spreadsheetDetails.workbook
-
-        workbook.active = worksheet
-        for row in dataframe_to_rows(
-            table,
-            index=False,
-            header=True
-        ):
-
-            worksheet.append(row)
-
-    def writeSummaryToWorksheet(self, series: Series) -> None:
-        summaryHeaders = list()
-        summaryValues = list()
-
-        indices = series.index.tolist()
-
-        for index in indices:
-            summaryHeaders.append(index)
-            valueForSummary = series[index]
-            summaryValues.append(valueForSummary)
-
-        self.spreadsheetDetails.worksheet.append(summaryHeaders)
-        self.spreadsheetDetails.worksheet.append(summaryValues)
-
-
-class SpreadsheetFormatter:
-    def __init__(
-        self,
-        spreadsheetDetails : SpreadsheetDetails,
-    ):
-
-        self.spreadsheetDetails = spreadsheetDetails
-        self.dataRows = self.spreadsheetDetails.worksheet.max_row
-
-    def fetchFormattedWorkSheet(self) -> SpreadsheetDetails:
-        return self.formatColumns()
-
-    def formatColumns(self) -> SpreadsheetDetails:
-        workbook = self.spreadsheetDetails.workbook
-        filePath = self.spreadsheetDetails.filePath
-
-        self.changeHeaderFont()
-        self.changeBodyFont()
-        self.adjustWidthOfColumnsToFit()
-        self.padRowHeight()
-        self.alignCellsBottomLeft()
-        workbook.save(filePath)
-
-        return SpreadsheetDetails(
-            filePath,
-            workbook,
-            self.spreadsheetDetails.worksheet,
-        )
-
-    def changeHeaderFont(self) -> None:
-        headerFontProfile = FontProfile(
-            "Georgia",
-            18,
-            boldToggle = True
-        )
-        fontFormatter = FontFormatter(self.spreadsheetDetails)
-        fontFormatter.changeHeaderFont(headerFontProfile)
-
-    def changeBodyFont(self) -> None:
-        bodyFontProfile = FontProfile(
-            "Helvetica Neue",
-            12.8,
-            boldToggle = False
-        )
-        fontFormatter = FontFormatter(self.spreadsheetDetails)
-        fontFormatter.changeBodyFont(bodyFontProfile)
-
-    def adjustWidthOfColumnsToFit(self) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
-
-        for column in worksheet.iter_cols():
-            currentColumnIndex = ""
-            maxLengthOfCellInColumn = 0
-
-            for cell in column:
-                currentColumnIndex = cell.column_letter
-                lengthOfCellValue = len(str(cell.value))
-                if lengthOfCellValue > maxLengthOfCellInColumn:
-                    maxLengthOfCellInColumn = lengthOfCellValue
-
-            worksheet.column_dimensions[currentColumnIndex].width = maxLengthOfCellInColumn + 8
-
-    def padRowHeight(self) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
-        idealRowHeight = 27
-
-        dataRows = worksheet.max_row + 1
-
-        for row in range(1, dataRows):
-            worksheet.row_dimensions[row].height = idealRowHeight
-
-    def alignCellsBottomLeft(self) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
-        lastDataColumnAccountedForRange = worksheet.max_column
-
-        for row in worksheet.iter_rows(
-                max_row=self.dataRows,
-                max_col=lastDataColumnAccountedForRange
-        ):
-            for cell in row:
-                cell.alignment = Alignment(
-                    horizontal="left",
-                    vertical="bottom"
-                )
-
-
 def getFormattedData():
     flatTextFileContent = readLinesFromFile(flatTextFile)
     itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
@@ -315,28 +136,5 @@ def getRawData():
     return Data(rawTable, rawSummary)
 
 
-def createDateWorksheet():
-    return SpreadsheetCreator().get(spreadsheetPath)
-
-
-def writtenSpreadSheet(spreadsheetDetails):
-    formattedData = getFormattedData()
-
-    spreadsheetToBeWrittenTo = SpreadsheetWriter(
-        spreadsheetDetails,
-        formattedData
-    )
-    writtenSpreadSheet = spreadsheetToBeWrittenTo.captureStateAfterWrite()
-
-    return writtenSpreadSheet
-
-
-def formattedSpreadSheet(spreadsheetDetails):
-    spreadsheetToBeFormatted = SpreadsheetFormatter(spreadsheetDetails)
-    formattedSpreadsheetDetails = spreadsheetToBeFormatted.fetchFormattedWorkSheet()
-    return formattedSpreadsheetDetails.workbook.save(
-        spreadsheetDetails.filePath
-    )
-
-
-formattedSpreadSheet(writtenSpreadSheet(createDateWorksheet()))
+data = getFormattedData()
+Spreadsheet(spreadsheetPath).apply(data)
