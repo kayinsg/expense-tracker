@@ -1,20 +1,17 @@
 
 from pandas import DataFrame
 
-
 from SupportInterfaces.TableConstructor import TableCreator
 from SupportInterfaces.TypeChecker import TypeChecker
 from SupportInterfaces.SummaryConstructor import Summary
 from SupportInterfaces.dataTransferObjects import Data
-from SupportInterfaces.utils import readLinesFromFile
 from paths import flatTextFile, spreadsheetPath
 from spreadsheet import Spreadsheet
 
 
 class DataFacade:
     def __init__(self):
-        flatTextFileContent = readLinesFromFile(flatTextFile)
-        itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
+        itemPricePairs = DataExtractor(flatTextFile).categorizeData()
         self.tableCreator = TableCreator(itemPricePairs)
         self.summaryCreator = Summary(itemPricePairs)
 
@@ -30,40 +27,29 @@ class DataFacade:
 
 
 class DataExtractor:
-    def __init__(self, listOfLinesInFile: list[str]):
-        self.listOfLinesInFile = listOfLinesInFile
+    def __init__(self, filePath: str):
+        with open(filePath, "r") as file:
+            self.listOfLinesInFile = file.read().splitlines()
 
     def categorizeData(self) ->  list[tuple[str, int | float, float, int]]:
         listOfLinesInFile = self.listOfLinesInFile
 
-        items: list[str] = list(filter(
-            self._lineComprisesStrings,
-            listOfLinesInFile
-        ))
-        pricesRepresentedAsStrings = list(filter(
-            self._lineComprisesNumbers,
-            listOfLinesInFile
-        ))
-        numericPrices = list(map(
-            self._convertPricesToNumericDataType,
-            pricesRepresentedAsStrings
-        ))
-        afterTaxPrices = list(map(
-            self._calculateAfterTaxPrices,
-            numericPrices
-        ))
-
-        taxPaidPerItem = self._calculateTaxesPaidPerItem(
-            numericPrices,
-            afterTaxPrices
+        items: list[str] = list(
+            filter(self._lineComprisesStrings, listOfLinesInFile)
         )
-
-        itemPriceInformation = list(zip(
-            items,
-            numericPrices,
-            afterTaxPrices,
-            taxPaidPerItem
-        ))
+        pricesRepresentedAsStrings = list(
+            filter(self._lineComprisesNumbers, listOfLinesInFile)
+        )
+        numericPrices = list(
+            map(self._convertPricesToNumericDataType, pricesRepresentedAsStrings)
+        )
+        afterTaxPrices = list(
+            map(self._calculateAfterTaxPrices, numericPrices)
+        )
+        taxPaidPerItem = self._calculateTaxesPaidPerItem(numericPrices, afterTaxPrices)
+        itemPriceInformation = list(
+            zip(items, numericPrices, afterTaxPrices, taxPaidPerItem)
+        )
 
         return itemPriceInformation
 
