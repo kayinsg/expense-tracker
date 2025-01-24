@@ -11,17 +11,22 @@ from paths import flatTextFile, spreadsheetPath
 from spreadsheet import Spreadsheet
 
 
-class TableFacade:
-    def __init__(self, flatTextPath: str):
-        self.itemPricePairs = DataExtractor(
-            readLinesFromFile(flatTextPath)
-        ).categorizeData()
+class DataFacade:
+    def __init__(self):
+        flatTextFileContent = readLinesFromFile(flatTextFile)
+        itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
+        self.tableCreator = TableCreator(itemPricePairs)
+        self.summaryCreator = Summary(itemPricePairs)
 
-    def getRawTable(self) -> DataFrame:
-        return TableCreator(self.itemPricePairs).makeTable("raw")
+    def formattedData(self):
+        viewTable = self.tableCreator.makeTable("view")
+        formattedSummary = self.summaryCreator.getFormattedSummary()
+        return Data(viewTable, formattedSummary)
 
-    def getFormattedTable(self) -> DataFrame:
-        return TableCreator(self.itemPricePairs).makeTable("view")
+    def rawData(self):
+        rawTable = self.tableCreator.makeTable("raw")
+        rawSummary = self.summaryCreator.getRawSummary()
+        return Data(rawTable, rawSummary)
 
 
 class DataExtractor:
@@ -107,26 +112,5 @@ class DataExtractor:
         return taxesPaidPerItem
 
 
-def getFormattedData():
-    flatTextFileContent = readLinesFromFile(flatTextFile)
-    itemPricePairs = DataExtractor(flatTextFileContent).categorizeData()
-    summary = Summary(itemPricePairs)
-    formattedSummary = summary.getFormattedSummary()
-    
-    table = TableFacade(flatTextFile)
-    viewTable = table.getFormattedTable()
-    
-    return Data(viewTable, formattedSummary)
-
-def getRawData():
-    rawTable = TableFacade(flatTextFile).getRawTable()
-    itemPricePairs = DataExtractor(readLinesFromFile(flatTextFile)).categorizeData()
-
-    summary = Summary(itemPricePairs)
-    rawSummary = summary.getRawSummary()
-
-    return Data(rawTable, rawSummary)
-
-
-data = getFormattedData()
+data = DataFacade().formattedData()
 Spreadsheet(spreadsheetPath).apply(data)
