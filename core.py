@@ -40,15 +40,14 @@ class DataExtractor:
         pricesRepresentedAsStrings = list(
             filter(self._lineComprisesNumbers, listOfLinesInFile)
         )
-        numericPrices = list(
-            map(self._convertPricesToNumericDataType, pricesRepresentedAsStrings)
-        )
-        afterTaxPrices = list(
-            map(self._calculateAfterTaxPrices, numericPrices)
-        )
-        taxPaidPerItem = self._calculateTaxesPaidPerItem(numericPrices, afterTaxPrices)
+        cost = Costs(pricesRepresentedAsStrings).get()
         itemPriceInformation = list(
-            zip(items, numericPrices, afterTaxPrices, taxPaidPerItem)
+            zip(
+                items,
+                cost['Prices'],
+                cost['After-Tax Prices'],
+                cost['Tax Per Item']
+            )
         )
 
         return itemPriceInformation
@@ -66,6 +65,32 @@ class DataExtractor:
         elif entryType == "Decimal":
             return True
         return False
+
+
+class Costs:
+    def __init__(self, pricesRepresentedAsStrings):
+        self.pricesRepresentedAsStrings = pricesRepresentedAsStrings
+
+    def get(self):
+        numericPrices = list(
+            map(
+                self._convertPricesToNumericDataType,
+                self.pricesRepresentedAsStrings
+            )
+        )
+        afterTaxPrices = list(
+            map(
+                self._calculateAfterTaxPrices,
+                numericPrices
+            )
+        )
+        taxPaidPerItem = self._calculateTaxesPaidPerItem(numericPrices, afterTaxPrices) 
+
+        return {
+            'Prices': numericPrices,
+            'After-Tax Prices': afterTaxPrices,
+            'Tax Per Item': taxPaidPerItem,
+        }
 
     def _convertPricesToNumericDataType(self, price: str) -> int | float:
         dataTypeOfPrice = TypeChecker(price).dataType
