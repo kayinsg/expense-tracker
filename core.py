@@ -70,6 +70,7 @@ class DataExtractor:
 class Costs:
     def __init__(self, pricesRepresentedAsStrings):
         self.pricesRepresentedAsStrings = pricesRepresentedAsStrings
+        self.taxRate = 0.13
 
     def get(self):
         numericPrices = list(
@@ -101,8 +102,7 @@ class Costs:
         return 0
 
     def _calculateAfterTaxPrices(self, price: int | float):
-        countryTaxRateInDecimal = 0.13
-        taxMultiplier = 1 + countryTaxRateInDecimal
+        taxMultiplier = 1 + self.taxRate
         afterTaxPrice = taxMultiplier * price
         return afterTaxPrice
 
