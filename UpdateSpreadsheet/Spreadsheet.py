@@ -15,10 +15,11 @@ from paths import spreadsheetPath
 from abc import abstractmethod, ABC
 from UpdateSpreadsheet.dataObjects import SpreadsheetDetails, FontProfile
 from GlobalDataObjects import Data
+from UpdateSpreadsheet.dataTypes import ExcelWorkbook, ExcelWorksheet
 
 
 class Spreadsheet:
-    def __init__(self, filePath):
+    def __init__(self, filePath: str):
         self.filePath = filePath
 
     def apply(self, data: Data):
@@ -31,7 +32,7 @@ class Spreadsheet:
 
 class SpreadsheetInterface(ABC):
     @abstractmethod
-    def apply(self):
+    def apply(self) -> SpreadsheetDetails:
         raise NotImplementedError(
             'This is an abstract class.'
             'Desist from trying to instantiate'
@@ -40,7 +41,7 @@ class SpreadsheetInterface(ABC):
 class SpreadsheetCreator:
 
     @classmethod
-    def workbook(cls, filename: str) -> openpyxl.Workbook:
+    def workbook(cls, filename: str) -> ExcelWorkbook:
         try:
             return load_workbook(
                 filename, keep_vba=True, keep_links=True
@@ -50,18 +51,18 @@ class SpreadsheetCreator:
             return openpyxl.Workbook()
 
     def apply(self, filePath: str) -> SpreadsheetDetails:
-        workbook = SpreadsheetCreator.workbook(filePath)
+        workbook: ExcelWorkbook = SpreadsheetCreator.workbook(filePath)
         self._removeUndesiredWorksheets(workbook)
-        worksheet = self._createDateWorksheet(workbook)
+        worksheet: ExcelWorksheet = self._createDateWorksheet(workbook)
         return SpreadsheetDetails(
             filePath,
             workbook,
             worksheet
         )
 
-    def _removeUndesiredWorksheets(self, workbook):
+    def _removeUndesiredWorksheets(self, workbook: ExcelWorkbook) -> None:
         worksheetKeyword = "Budget"
-        listOfWorksheets = workbook.worksheets
+        listOfWorksheets: list[ExcelWorksheet] = workbook.worksheets
         for worksheet in listOfWorksheets:
             worksheetName = str(worksheet)
             if worksheetKeyword in worksheetName:
@@ -69,14 +70,14 @@ class SpreadsheetCreator:
             else:
                 workbook.remove(worksheet)
 
-    def _createDateWorksheet(self, workbook: openpyxl.Workbook) -> ExcelWorksheet:
+    def _createDateWorksheet(self, workbook: ExcelWorkbook) -> ExcelWorksheet:
         formattedCurrentDate = pendulum.now().format("MMM.DD.YYYY")
         worksheetName = f"{formattedCurrentDate} Budget"
         dateWorksheet = workbook.create_sheet(worksheetName, 0)
         return dateWorksheet
 
 
-class SpreadsheetWriter:
+class SpreadsheetWriter(SpreadsheetInterface):
     def __init__(
         self,
         spreadsheetDetails: SpreadsheetDetails,

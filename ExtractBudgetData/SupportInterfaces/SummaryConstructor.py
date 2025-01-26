@@ -5,13 +5,13 @@ from pandas import Series
 
 
 class Summary:
-    def __init__(self, itemPricePairs):
+    def __init__(self, itemPricePairs: list[tuple[str, int | float, float, int]]):
         self.itemPricePairs = itemPricePairs
 
-    def getRawSummary(self):
+    def getRawSummary(self) -> Series:
         return RawSummary(self.itemPricePairs).getSummary()
 
-    def getFormattedSummary(self):
+    def getFormattedSummary(self) -> Series:
         seriesData = RawSummary(self.itemPricePairs).getSummary()
         return FormattedSummary(seriesData).getSummary()
 
@@ -41,7 +41,7 @@ class RawSummary:
         )
         return summaryTable
 
-    def aggregateColumnSummaries(self) -> list:
+    def aggregateColumnSummaries(self) -> list[str]:
         numberOfItems = list(
             self._getTotalAmountItems(
                 self.table
@@ -72,7 +72,7 @@ class FormattedSummary:
     def __init__(self, summary: Series):
         self.summary = summary
 
-    def getSummary(self):
+    def getSummary(self) -> Series:
         primitiveSummary = dict()
         items = list(self.summary.items())
         for label, value in items:

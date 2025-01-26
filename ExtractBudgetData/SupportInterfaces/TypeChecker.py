@@ -6,7 +6,7 @@ class TypeChecker:
         self.dataToEvaluate = dataToEvaluate
         self.dataType       = self.determineDataType()
 
-    def determineDataType(self):
+    def determineDataType(self) -> str:
         category = self.createTypeCategory()
         dataType = category.checkDataType()
         return dataType
@@ -23,6 +23,8 @@ class TypeChecker:
         elif dataIsComposite:
             return CompositeTypeChecker(dataToEvaluate)
 
+        return AtomicTypeChecker(dataToEvaluate)
+
 
 class TypeCheckerInterface:
     def checkDataType(self):
@@ -34,7 +36,7 @@ class AtomicTypeChecker(TypeCheckerInterface):
         self.dataToEvaluate = dataToEvaluate
         self.dataType = self.checkDataType()
 
-    def checkDataType(self):
+    def checkDataType(self) -> str:
         dataToEvaluate = self.dataToEvaluate
 
         valueIsADecimalNumber = self.isADecimalNumber(dataToEvaluate)
@@ -58,7 +60,7 @@ class AtomicTypeChecker(TypeCheckerInterface):
         else:
             return False
 
-    def isAnInteger(self,value):
+    def isAnInteger(self,value) -> bool:
         decimalPattern = regex.compile(r"\d+$")
         checkForInteger = regex.match(decimalPattern, str(value))
         if checkForInteger:
@@ -72,7 +74,7 @@ class CompositeTypeChecker(TypeCheckerInterface):
         self.dataToEvaluate = dataToEvaluate
         self.dataType       = self.checkDataType()
 
-    def checkDataType(self):
+    def checkDataType(self) -> str:
         dataToEvaluate = self.dataToEvaluate
         iterableIsFloat = self.checkIterableForFloat(dataToEvaluate)
         iterableIsString = self.checkIterableForString(dataToEvaluate)
@@ -81,9 +83,9 @@ class CompositeTypeChecker(TypeCheckerInterface):
         elif iterableIsString:
             return "String"
         else:
-            return None
+            return "None"
 
-    def checkIterableForFloat(self, purportedFloatIterable):
+    def checkIterableForFloat(self, purportedFloatIterable) -> bool:
         checkedValues = list()
 
         for element in purportedFloatIterable:
@@ -97,7 +99,7 @@ class CompositeTypeChecker(TypeCheckerInterface):
 
         return False
 
-    def checkIterableForString(self, purportedStringIterable):
+    def checkIterableForString(self, purportedStringIterable) -> bool:
         checkedValues = list()
 
         for element in purportedStringIterable:

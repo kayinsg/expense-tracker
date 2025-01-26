@@ -11,19 +11,19 @@ class FontFormatter:
         self.workbook = spreadsheetDetails.workbook
         self.filePath = spreadsheetDetails.filePath
 
-    def changeHeaderFont(self, FontProfile):
+    def changeHeaderFont(self, FontProfile) -> None:
         HeaderFormatter(self.worksheet).changeFont(FontProfile)
 
-    def changeBodyFont(self, FontProfile):
+    def changeBodyFont(self, FontProfile) -> None:
         BodyFormatter(self.worksheet).changeFont(FontProfile)
 
-    def saveWorkbook(self):
+    def saveWorkbook(self) -> None:
         self.workbook.save(self.filePath)
 
 
 class FontFormatterInterface(ABC):
     @abstractmethod
-    def changeFont(self, FontProfile):
+    def changeFont(self, FontProfile) -> None:
         raise NotImplementedError(
             'This is an abstract class.'
             'Desist from trying to instantiate'
@@ -38,7 +38,7 @@ class HeaderFormatter:
         self.worksheet = worksheet
         self.headerRowNumbers = RowIdentifier(worksheet).fetchHeaderRowNumbers()
 
-    def changeFont(self, FontProfile):
+    def changeFont(self, FontProfile) -> None:
 
         worksheet = self.worksheet
         lastColumnContainingData = worksheet.max_column + 1
@@ -60,7 +60,7 @@ class BodyFormatter:
             worksheet
         ).fetchBodyRowNumbers()
 
-    def changeFont(self, FontProfile):
+    def changeFont(self, FontProfile) -> None:
         worksheet = self.worksheet
         lastColumnContainingData = worksheet.max_column + 1
         for bodyRow in self.bodyRowNumbers:
@@ -89,7 +89,7 @@ class RowIdentifier:
     def fetchBodyRowNumbers(self) -> list[int]:
         return self.classifyRows()['Body Row Numbers']
 
-    def classifyRows(self):
+    def classifyRows(self) -> dict[str, list[int]]:
         rowDetails = defaultdict(list)
         for row in self.worksheet.iter_rows():
             cellValues = list()
@@ -107,7 +107,7 @@ class RowIdentifier:
 
         return rowDetails
 
-    def rowComprisesHeader(self, rowValues):
+    def rowComprisesHeader(self, rowValues) -> bool:
 
         headerPattern = regex.compile(r'\w')
         checkedValues = list()

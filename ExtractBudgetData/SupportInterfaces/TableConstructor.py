@@ -6,10 +6,10 @@ from ExtractBudgetData.SupportInterfaces.TypeChecker import TypeChecker
 
 
 class TableCreator:
-    def __init__(self, itemPricePairs: list):
+    def __init__(self, itemPricePairs: list[tuple[str, int | float, float, int]]):
         self.itemPricePairs = itemPricePairs
 
-    def getDollarColumnsFromTable(self):
+    def getDollarColumnsFromTable(self) -> list[dict]:
         return BeautifiedTableBuilder(self.itemPricePairs).getDollarColumns()
 
     def makeTable(self, typeOfTable) -> DataFrame:
@@ -34,7 +34,7 @@ class RawTableBuilder(TableInterface):
     def __init__(self, itemPricePairs):
         self.itemPricePairs = itemPricePairs
 
-    def constructTable(self):
+    def constructTable(self) -> DataFrame:
         itemPricePairsSortedByPrice =  set(self.sortPricesHighToLow())
         itemPriceTable              =  self.putDataIntoTable(itemPricePairsSortedByPrice)
         return itemPriceTable
@@ -66,7 +66,7 @@ class BeautifiedTableBuilder(TableInterface):
         self.table = RawTableBuilder(itemPricePairs).constructTable()
 
     def constructTable(self) -> DataFrame:
-        dollarColumns = self.getDollarColumns()
+        dollarColumns: list[dict] = self.getDollarColumns()
         beautifiedTable = self._padDollarColumnValues(
             self.table,
             dollarColumns
@@ -86,9 +86,8 @@ class BeautifiedTableBuilder(TableInterface):
             dataFrame[column['Name']] = paddedValues
         return dataFrame
 
-    def getDollarColumns(self):
-        totalColumnsObject = self.table.columns
-        totalColumns: list[str] = totalColumnsObject.tolist()
+    def getDollarColumns(self) -> list[dict]:
+        totalColumns: list[str] = self.table.columns.tolist()
         dollarColumns = list()
         for column in totalColumns:
             columnValues = self.table[column].tolist()
