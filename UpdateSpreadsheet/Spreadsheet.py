@@ -1,5 +1,4 @@
 from abc import abstractmethod
-import os
 from openpyxl import load_workbook
 import openpyxl
 from openpyxl.styles import Alignment
@@ -11,10 +10,11 @@ from pandas import Series
 import pendulum
 
 
-from SupportInterfaces.FontFormatter import FontFormatter
+from UpdateSpreadsheet.FontFormatter import FontFormatter
 from paths import spreadsheetPath
 from abc import abstractmethod, ABC
-from SupportInterfaces.dataTransferObjects import Data, SpreadsheetDetails, FontProfile
+from UpdateSpreadsheet.dataObjects import SpreadsheetDetails, FontProfile
+from GlobalDataObjects import Data
 
 
 class Spreadsheet:

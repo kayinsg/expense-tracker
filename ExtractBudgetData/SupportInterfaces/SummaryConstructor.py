@@ -1,4 +1,4 @@
-from .TableConstructor import TableCreator
+from ExtractBudgetData.SupportInterfaces.TableConstructor import TableCreator
 from pandas import Index
 from abc import ABC, abstractmethod
 from pandas import Series
@@ -64,7 +64,7 @@ class RawSummary:
     def _getTotalsForEachDollarColumn(self, table):
         dollarColumns = table.getDollarColumnsFromTable()
         for column in dollarColumns:
-            totalForColumn = sum(column.values)
+            totalForColumn = sum(column['Values'])
             yield totalForColumn
 
 

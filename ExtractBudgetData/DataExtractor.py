@@ -1,16 +1,13 @@
-
 from pandas import DataFrame
 
-from SupportInterfaces.TableConstructor import TableCreator
-from SupportInterfaces.TypeChecker import TypeChecker
-from SupportInterfaces.SummaryConstructor import Summary
-from SupportInterfaces.dataTransferObjects import Data
-from paths import flatTextFile, spreadsheetPath
-from spreadsheet import Spreadsheet
+from ExtractBudgetData.SupportInterfaces.TableConstructor import TableCreator
+from ExtractBudgetData.SupportInterfaces.TypeChecker import TypeChecker
+from ExtractBudgetData.SupportInterfaces.SummaryConstructor import Summary
 
+from GlobalDataObjects import Data
 
 class DataFacade:
-    def __init__(self):
+    def __init__(self, flatTextFile):
         itemPricePairs = DataExtractor(flatTextFile).categorizeData()
         self.tableCreator = TableCreator(itemPricePairs)
         self.summaryCreator = Summary(itemPricePairs)
@@ -121,7 +118,3 @@ class Costs:
             taxesPaidPerItem.append(taxPaid)
 
         return taxesPaidPerItem
-
-
-data = DataFacade().formattedData()
-Spreadsheet(spreadsheetPath).apply(data)

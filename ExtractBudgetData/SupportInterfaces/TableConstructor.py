@@ -2,8 +2,7 @@ from abc import ABC, abstractmethod
 from pandas import DataFrame
 from pandas import Index
 
-from .utils import getDollarColumns
-from .dataTransferObjects import ColumnDetails
+from ExtractBudgetData.SupportInterfaces.TypeChecker import TypeChecker
 
 
 class TableCreator:
@@ -11,8 +10,7 @@ class TableCreator:
         self.itemPricePairs = itemPricePairs
 
     def getDollarColumnsFromTable(self):
-        rawTable = RawTableBuilder(self.itemPricePairs).constructTable()
-        return getDollarColumns(rawTable)
+        return BeautifiedTableBuilder(self.itemPricePairs).getDollarColumns()
 
     def makeTable(self, typeOfTable) -> DataFrame:
         tableType = self._determineTypeOfTable(typeOfTable)
@@ -68,10 +66,9 @@ class BeautifiedTableBuilder(TableInterface):
         self.table = RawTableBuilder(itemPricePairs).constructTable()
 
     def constructTable(self) -> DataFrame:
-        table = self.table
-        dollarColumns = getDollarColumns(table)
+        dollarColumns = self.getDollarColumns()
         beautifiedTable = self._padDollarColumnValues(
-            table,
+            self.table,
             dollarColumns
         )
         return beautifiedTable
@@ -79,12 +76,29 @@ class BeautifiedTableBuilder(TableInterface):
     def _padDollarColumnValues(
         self,
         dataFrame,
-        dollarColumns: list[ColumnDetails],
+        dollarColumns: list[dict[str, list[int]]],
     ):
         for column in dollarColumns:
             paddedValues = list()
-            for value in column.values:
+            for value in column['Values']:
                 paddedDecimal = f"$ {value:05.2f}"
                 paddedValues.append(paddedDecimal)
-            dataFrame[column.name] = paddedValues
+            dataFrame[column['Name']] = paddedValues
         return dataFrame
+
+    def getDollarColumns(self):
+        totalColumnsObject = self.table.columns
+        totalColumns: list[str] = totalColumnsObject.tolist()
+        dollarColumns = list()
+        for column in totalColumns:
+            columnValues = self.table[column].tolist()
+            if TypeChecker(columnValues).dataType == "Decimal":
+                dollarColumns.append(
+                    {
+                        'Name': column,
+                        'Values': columnValues,
+                    }
+                )
+            else:
+                pass
+        return dollarColumns

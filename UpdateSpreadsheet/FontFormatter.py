@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import re as regex
 
 from openpyxl.styles import Font
-from .dataTransferObjects import RowInfo
+from collections import defaultdict
 
 
 class FontFormatter:
@@ -84,13 +84,13 @@ class RowIdentifier:
         self.worksheet = worksheet
 
     def fetchHeaderRowNumbers(self) -> list[int]:
-        return self.classifyRows().headerRowNumbers
+        return self.classifyRows()['Header Row Numbers']
 
     def fetchBodyRowNumbers(self) -> list[int]:
-        return self.classifyRows().bodyRowNumbers
+        return self.classifyRows()['Body Row Numbers']
 
     def classifyRows(self):
-        rowDetails = RowInfo([], [])
+        rowDetails = defaultdict(list)
         for row in self.worksheet.iter_rows():
             cellValues = list()
 
@@ -98,11 +98,11 @@ class RowIdentifier:
                 cellValues.append(cell.value)
             if self.rowComprisesHeader(cellValues):
                 for cell in row:
-                    rowDetails.headerRowNumbers.append(cell.row)
+                    rowDetails['Header Row Numbers'].append(cell.row)
                     break
             else:
                 for cell in row:
-                    rowDetails.bodyRowNumbers.append(cell.row)
+                    rowDetails['Body Row Numbers'].append(cell.row)
                     break
 
         return rowDetails

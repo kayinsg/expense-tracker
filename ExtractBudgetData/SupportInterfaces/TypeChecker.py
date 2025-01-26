@@ -1,6 +1,5 @@
 import re as regex
-from .dataTransferObjects import AtomicDataStructure, CompositeDataStructure
-
+from ExtractBudgetData.SupportInterfaces.dataTypes import AtomicDataStructure, CompositeDataStructure
 
 class TypeChecker:
     def __init__(self, dataToEvaluate: str | list | tuple):
