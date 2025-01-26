@@ -5,10 +5,11 @@ from ExtractBudgetData.SupportInterfaces.TypeChecker import TypeChecker
 from ExtractBudgetData.SupportInterfaces.SummaryConstructor import Summary
 
 from GlobalDataObjects import Data
+from ExtractBudgetData.dataTypes import categorizedDataTuples
 
 class DataFacade:
     def __init__(self, flatTextPath: str):
-        itemPricePairs: list[tuple[str, int | float, float, int]] = DataExtractor(flatTextPath).categorizeData()
+        itemPricePairs: categorizedDataTuples = DataExtractor(flatTextPath).categorizeData()
         self.tableCreator = TableCreator(itemPricePairs)
         self.summaryCreator = Summary(itemPricePairs)
 
@@ -28,7 +29,7 @@ class DataExtractor:
         with open(filePath, "r") as file:
             self.listOfLinesInFile: list[str] = file.read().splitlines()
 
-    def categorizeData(self) ->  list[tuple[str, int | float, float, int]]:
+    def categorizeData(self) ->  categorizedDataTuples:
         listOfLinesInFile = self.listOfLinesInFile
 
         items: list[str] = list(

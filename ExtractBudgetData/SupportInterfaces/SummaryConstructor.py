@@ -2,10 +2,11 @@ from ExtractBudgetData.SupportInterfaces.TableConstructor import TableCreator
 from pandas import Index
 from abc import ABC, abstractmethod
 from pandas import Series
+from ExtractBudgetData.dataTypes import categorizedDataTuples
 
 
 class Summary:
-    def __init__(self, itemPricePairs: list[tuple[str, int | float, float, int]]):
+    def __init__(self, itemPricePairs: categorizedDataTuples):
         self.itemPricePairs = itemPricePairs
 
     def getRawSummary(self) -> Series:

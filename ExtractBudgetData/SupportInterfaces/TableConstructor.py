@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 from pandas import DataFrame
 from pandas import Index
 
+from ExtractBudgetData.dataTypes import categorizedDataTuples
 from ExtractBudgetData.SupportInterfaces.TypeChecker import TypeChecker
 
 
 class TableCreator:
-    def __init__(self, itemPricePairs: list[tuple[str, int | float, float, int]]):
+    def __init__(self, itemPricePairs: categorizedDataTuples):
         self.itemPricePairs = itemPricePairs
 
     def getDollarColumnsFromTable(self) -> list[dict]:
