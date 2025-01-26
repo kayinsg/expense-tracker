@@ -129,7 +129,7 @@ class SpreadsheetWriter(SpreadsheetInterface):
         self.spreadsheetDetails.worksheet.append(summaryValues)
 
 
-class SpreadsheetFormatter:
+class SpreadsheetFormatter(SpreadsheetInterface):
     def __init__(
         self,
         spreadsheetDetails : SpreadsheetDetails,

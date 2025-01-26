@@ -30,7 +30,7 @@ class FontFormatterInterface(ABC):
         )
 
 
-class HeaderFormatter:
+class HeaderFormatter(FontFormatterInterface):
     def __init__(
         self,
         worksheet,
@@ -53,7 +53,7 @@ class HeaderFormatter:
                 )
 
 
-class BodyFormatter:
+class BodyFormatter(FontFormatterInterface):
     def __init__(self, worksheet):
         self.worksheet = worksheet
         self.bodyRowNumbers = RowIdentifier(

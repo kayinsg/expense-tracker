@@ -22,7 +22,7 @@ class SummaryInterface(ABC):
         pass
 
 
-class RawSummary:
+class RawSummary(SummaryInterface):
     def __init__(self, itemPairs):
         self.itemPricePairs = itemPairs
         self.table = TableCreator(self.itemPricePairs)
@@ -68,7 +68,7 @@ class RawSummary:
             yield totalForColumn
 
 
-class FormattedSummary:
+class FormattedSummary(SummaryInterface):
     def __init__(self, summary: Series):
         self.summary = summary
 
