@@ -36,20 +36,12 @@ class RawTableBuilder(TableInterface):
         self.itemPricePairs = itemPricePairs
 
     def constructTable(self) -> DataFrame:
-        itemPricePairsSortedByPrice =  set(self.sortPricesHighToLow())
+        itemPricePairsSortedByPrice = sorted(self.itemPricePairs, key = self.capturePrice, reverse=True)
         itemPriceTable              =  self.putDataIntoTable(itemPricePairsSortedByPrice)
         return itemPriceTable
 
-    def sortPricesHighToLow(self):
-        itemPricePairs = self.itemPricePairs
-        grossPrices = list()
-        for item in itemPricePairs:
-            grossPrices.append(item[1])
-        sortedGrossPrices = sorted(grossPrices, reverse=True)
-        for grossPrice in sortedGrossPrices:
-            for item in itemPricePairs:
-                if grossPrice == item[1]:
-                    yield item
+    def capturePrice(self, categorizedDataTuple):
+        return categorizedDataTuple[1]
 
     def putDataIntoTable(self, itemPricePairs) -> DataFrame:
         columnNames = Index(
