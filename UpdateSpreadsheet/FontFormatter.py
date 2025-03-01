@@ -36,7 +36,7 @@ class HeaderFormatter(FontFormatterInterface):
         worksheet,
     ):
         self.worksheet = worksheet
-        self.headerRowNumbers = RowIdentifier(worksheet).fetchHeaderRowNumbers()
+        self.headerRowNumbers = RowIdentifier(worksheet).fetchRowNumbers("header")
 
     def changeFont(self, FontProfile) -> None:
 
@@ -56,9 +56,7 @@ class HeaderFormatter(FontFormatterInterface):
 class BodyFormatter(FontFormatterInterface):
     def __init__(self, worksheet):
         self.worksheet = worksheet
-        self.bodyRowNumbers = RowIdentifier(
-            worksheet
-        ).fetchBodyRowNumbers()
+        self.bodyRowNumbers = RowIdentifier(worksheet).fetchRowNumbers("body")
 
     def changeFont(self, FontProfile) -> None:
         worksheet = self.worksheet
@@ -83,11 +81,12 @@ class RowIdentifier:
     def __init__(self, worksheet):
         self.worksheet = worksheet
 
-    def fetchHeaderRowNumbers(self) -> list[int]:
-        return self.classifyRows()['Header Row Numbers']
-
-    def fetchBodyRowNumbers(self) -> list[int]:
-        return self.classifyRows()['Body Row Numbers']
+    def fetchRowNumbers(self, rowType) -> list[int]:
+        rowNumbers = {
+                "header": self.classifyRows()['Header Row Numbers'],
+                "body": self.classifyRows()['Body Row Numbers']
+        }
+        return rowNumbers[rowType]
 
     def classifyRows(self) -> dict[str, list[int]]:
         rowDetails = defaultdict(list)
