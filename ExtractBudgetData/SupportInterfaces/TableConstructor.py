@@ -70,19 +70,6 @@ class BeautifiedTableBuilder(TableInterface):
         )
         return beautifiedTable
 
-    def _padDollarColumnValues(
-        self,
-        dataFrame,
-        dollarColumns: list[dict[str, list[int]]],
-    ):
-        for column in dollarColumns:
-            paddedValues = list()
-            for value in column['Values']:
-                paddedDecimal = f"$ {value:05.2f}"
-                paddedValues.append(paddedDecimal)
-            dataFrame[column['Name']] = paddedValues
-        return dataFrame
-
     def getDollarColumns(self) -> list[dict]:
         totalColumns: list[str] = self.table.columns.tolist()
         dollarColumns = list()
@@ -98,3 +85,16 @@ class BeautifiedTableBuilder(TableInterface):
             else:
                 pass
         return dollarColumns
+
+    def _padDollarColumnValues(
+        self,
+        dataFrame,
+        dollarColumns: list[dict[str, list[int]]],
+    ):
+        for column in dollarColumns:
+            paddedValues = list()
+            for value in column['Values']:
+                paddedDecimal = f"$ {value:05.2f}"
+                paddedValues.append(paddedDecimal)
+            dataFrame[column['Name']] = paddedValues
+        return dataFrame
