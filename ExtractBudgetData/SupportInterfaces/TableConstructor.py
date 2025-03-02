@@ -11,7 +11,8 @@ class TableCreator:
         self.itemPricePairs = itemPricePairs
 
     def getDollarColumnsFromTable(self) -> list[dict]:
-        return BeautifiedTableBuilder(self.itemPricePairs).getDollarColumns()
+        table = RawTableBuilder(self.itemPricePairs).constructTable()
+        return BeautifiedTableBuilder(self.itemPricePairs).getDollarColumns(table)
 
     def makeTable(self, typeOfTable) -> DataFrame:
         tableType = self._determineTypeOfTable(typeOfTable)
@@ -63,18 +64,18 @@ class BeautifiedTableBuilder(TableInterface):
         self.table = RawTableBuilder(itemPricePairs).constructTable()
 
     def constructTable(self) -> DataFrame:
-        dollarColumns: list[dict] = self.getDollarColumns()
+        dollarColumns: list[dict] = self.getDollarColumns(self.table)
         beautifiedTable = self._padDollarColumnValues(
             self.table,
             dollarColumns
         )
         return beautifiedTable
 
-    def getDollarColumns(self) -> list[dict]:
-        totalColumns: list[str] = self.table.columns.tolist()
+    def getDollarColumns(self, table) -> list[dict]:
+        totalColumns: list[str] = table.columns.tolist()
         dollarColumns = list()
         for column in totalColumns:
-            columnValues = self.table[column].tolist()
+            columnValues = table[column].tolist()
             if TypeChecker(columnValues).dataType == "Decimal":
                 dollarColumns.append(
                     {
