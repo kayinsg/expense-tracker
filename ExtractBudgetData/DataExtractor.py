@@ -49,12 +49,8 @@ class DataExtractor:
     def categorizeData(self) ->  categorizedDataTuples:
         listOfLinesInFile = self.listOfLinesInFile
 
-        items: list[str] = list(
-            filter(self._lineComprisesStrings, listOfLinesInFile)
-        )
-        pricesRepresentedAsStrings = list(
-            filter(self._lineComprisesNumbers, listOfLinesInFile)
-        )
+        items: list[str] = list(filter(self._lineComprisesStrings, listOfLinesInFile))
+        pricesRepresentedAsStrings = list(filter(self._lineComprisesNumbers, listOfLinesInFile))
         cost = Costs(pricesRepresentedAsStrings).get()
         itemPriceInformation = list(
             zip(
@@ -88,18 +84,8 @@ class Costs:
         self.taxRate = 0.13
 
     def get(self) -> dict[str, list[int | float]]:
-        numericPrices: list[int | float] = list(
-            map(
-                self._convertPricesToNumericDataType,
-                self.pricesRepresentedAsStrings
-            )
-        )
-        afterTaxPrices: list[int | float] = list(
-            map(
-                self._calculateAfterTaxPrices,
-                numericPrices
-            )
-        )
+        numericPrices: list[int | float] = list(map(self._convertPricesToNumericDataType, self.pricesRepresentedAsStrings))
+        afterTaxPrices: list[int | float] = list(map( self._calculateAfterTaxPrices, numericPrices))
         taxPaidPerItem: list[int | float] = self._calculateTaxesPaidPerItem(numericPrices, afterTaxPrices) 
 
         return {
