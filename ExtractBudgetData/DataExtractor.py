@@ -12,17 +12,18 @@ class DataFacade:
     def __init__(self, flatTextPath: str):
         self.flatTextPath = flatTextPath
 
+    @staticmethod
+    def categorizedData(textFile) -> categorizedDataTuples:
+        return DataExtractor(textFile).categorizeData()
+
     def get(self, dataFormat):
-        itemPricePairs = self.categorizedData(self.flatTextPath)
+        itemPricePairs = DataFacade.categorizedData(self.flatTextPath)
         dataCreators = self.dataArtifacts(itemPricePairs)
         data = {
             'Formatted': self.formattedData(dataCreators),
             'Raw': self.rawData(dataCreators),
         }
         return data[dataFormat]
-
-    def categorizedData(self, textFile):
-        return DataExtractor(textFile).categorizeData()
 
     def dataArtifacts(self, itemPricePairs):
         return {
