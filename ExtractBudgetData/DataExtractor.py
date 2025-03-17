@@ -42,9 +42,14 @@ class DataFacade:
 
 
 class DataExtractor:
-    def __init__(self, filePath: str):
+
+    @staticmethod
+    def getListOfLinesInFile(filePath) -> list[str]:
         with open(filePath, "r") as file:
-            self.listOfLinesInFile: list[str] = file.read().splitlines()
+            return file.read().splitlines()
+
+    def __init__(self, filePath: str):
+        self.listOfLinesInFile: list[str] = self.getListOfLinesInFile(filePath)
 
     def categorizeData(self) ->  categorizedDataTuples:
         listOfLinesInFile = self.listOfLinesInFile
