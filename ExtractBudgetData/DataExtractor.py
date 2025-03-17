@@ -7,20 +7,37 @@ from ExtractBudgetData.SupportInterfaces.SummaryConstructor import Summary
 from GlobalDataObjects import Data
 from ExtractBudgetData.dataTypes import categorizedDataTuples
 
+
 class DataFacade:
     def __init__(self, flatTextPath: str):
-        itemPricePairs: categorizedDataTuples = DataExtractor(flatTextPath).categorizeData()
-        self.tableCreator = TableCreator(itemPricePairs)
-        self.summaryCreator = Summary(itemPricePairs)
+        self.flatTextPath = flatTextPath
 
-    def formattedData(self) -> Data:
-        viewTable = self.tableCreator.makeTable("view")
-        formattedSummary = self.summaryCreator.getFormattedSummary()
+    def get(self, dataFormat):
+        itemPricePairs = self.categorizedData(self.flatTextPath)
+        dataCreators = self.dataArtifacts(itemPricePairs)
+        data = {
+            'Formatted': self.formattedData(dataCreators),
+            'Raw': self.rawData(dataCreators),
+        }
+        return data[dataFormat]
+
+    def categorizedData(self, textFile):
+        return DataExtractor(textFile).categorizeData()
+
+    def dataArtifacts(self, itemPricePairs):
+        return {
+            'Table': TableCreator(itemPricePairs),
+            'Summary': Summary(itemPricePairs),
+        }
+
+    def formattedData(self, creator) -> Data:
+        viewTable = creator['Table'].makeTable("view")
+        formattedSummary = creator['Summary'].getFormattedSummary()
         return Data(viewTable, formattedSummary)
 
-    def rawData(self) -> Data:
-        rawTable = self.tableCreator.makeTable("raw")
-        rawSummary = self.summaryCreator.getRawSummary()
+    def rawData(self, creator) -> Data:
+        rawTable = creator['Table'].makeTable("raw")
+        rawSummary = creator['Summary'].getRawSummary()
         return Data(rawTable, rawSummary)
 
 
