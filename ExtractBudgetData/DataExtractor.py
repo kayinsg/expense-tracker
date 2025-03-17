@@ -120,10 +120,7 @@ class Costs:
 
         pricePairs = list(zip(grossPrices, afterTaxPrices))
 
-        taxesPaidPerItem = list()
-
-        for grossPrice, afterTaxPrice in pricePairs:
-            taxPaid = afterTaxPrice - grossPrice
-            taxesPaidPerItem.append(taxPaid)
+        calculateTaxPaidPerItem = lambda pricePair: pricePair[1] - pricePair[0]
+        taxesPaidPerItem = list(map(calculateTaxPaidPerItem, pricePairs))
 
         return taxesPaidPerItem
