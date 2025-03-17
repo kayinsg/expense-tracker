@@ -44,7 +44,7 @@ class RawTableBuilder(TableInterface):
     def sortItemsByPrice(self, itemPricePairs):
         return sorted(
             itemPricePairs,
-            key=itemPricePairs[1],
+            key=lambda categorizedDataTuple: categorizedDataTuple[1],
             reverse=True
         )
 
