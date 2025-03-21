@@ -1,3 +1,5 @@
 from typing import TypeAlias
 
-categorizedDataTuples: TypeAlias = list[tuple[str, int | float, int | float, int | float]]
+item: TypeAlias = str
+dollars: TypeAlias = int | float
+categorizedDataTuples: TypeAlias = list[tuple[item, dollars, dollars, dollars]]
