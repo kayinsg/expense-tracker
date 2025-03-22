@@ -8,19 +8,19 @@ class FileSystem:
         self.spreadsheetParentDirectory = spreadsheetParentDirectory
         self.currentDate = currentDate
 
+    def createSpreadsheetMonthFolder(self):
+        directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
+        currentDate = pendulum.now().format('YYYY-MM-DD')
+        createdMonthDirectory = MonthDirectory(directoryCreator, currentDate).create()
+        return createdMonthDirectory
+
+class FileSystemInterface(ABC):
+
     @staticmethod
     def standardizePath(path):
         if not path.endswith("/"):
             path += "/"
         return path
-
-    def createSpreadsheetMonthFolder(self):
-        directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
-        currentDate = pendulum.now().format('YYYY-MM-DD')
-        createdMonthDirectory = MonthDirectory(directoryCreator, currentDate).create()
-        return self.standardizePath(createdMonthDirectory)
-
-class FileSystemInterface(ABC):
 
     @abstractmethod
     def create(self):
