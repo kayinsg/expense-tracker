@@ -26,7 +26,7 @@ class FileSystemInterface(ABC):
     def create(self):
         pass
 
-class MonthDirectory:
+class MonthDirectory(FileSystemInterface):
     def __init__(self, folderCreator, currentDate):
         self.folderCreator = folderCreator
         self.currentDate = currentDate
