@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import pendulum
 import os
+import openpyxl
 
 
 class FileSystem:
@@ -62,3 +63,45 @@ class DirectoryCreator:
             print(f"Folder '{monthName}' already exists.")
         except Exception as e:
             print(f"An error occurred while creating the folder: {e}")
+
+
+class SpreadsheetFileCreator(FileSystemInterface):
+    def __init__(self, fileCreator, currentDate):
+        self.fileCreator = fileCreator
+        self.currentDate = currentDate
+
+    def create(self):
+        weekWithinMonth = self.getWeekInMonth(self.currentDate)
+        spreadsheetFileName = self.getSpreadsheetFileName(weekWithinMonth)
+        spreadsheetFile =  self.createSpreadsheetOnFileSystem(spreadsheetFileName)
+        return self.getWorkbook(spreadsheetFile)
+
+    def getWeekInMonth(self, isoDate):
+        date = pendulum.parse(isoDate)
+        return date.week_of_month
+
+    def getSpreadsheetFileName(self, weekWithinMonth):
+        return f'Week {weekWithinMonth}'
+
+    def createSpreadsheetOnFileSystem(self, spreadsheetFileName):
+        return self.fileCreator.create(spreadsheetFileName)
+
+    def getWorkbook(self, spreadsheetFilePath):
+        return openpyxl.load_workbook(spreadsheetFilePath)
+
+
+class FileCreator:
+    def __init__(self, parentDirectory):
+        self.parentDirectory = parentDirectory
+
+    def create(self, fileName):
+       completeFileName = self.completeFileName(fileName) 
+       self.createSpreadsheetFile(completeFileName)
+       return completeFileName
+
+    def completeFileName(self, fileName):
+        return f"{self.parentDirectory}{fileName}.xlsx"
+
+    def createSpreadsheetFile(self, completeFileName):
+        workbook = openpyxl.Workbook()
+        workbook.save(completeFileName)
