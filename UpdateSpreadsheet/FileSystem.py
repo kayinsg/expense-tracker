@@ -8,6 +8,11 @@ class FileSystem:
     def __init__(self, spreadsheetParentDirectory):
         self.spreadsheetParentDirectory = spreadsheetParentDirectory
 
+    def setUpSpreadsheet(self):
+        monthFolder = self.createSpreadsheetMonthFolder()
+        workbook = self.createSpreadsheetFile(monthFolder)
+        return workbook
+
     def createSpreadsheetFile(self, parentDirectory):
         currentDate = pendulum.now().format('YYYY-MM-DD')
         monthFolderPath = FileSystem(parentDirectory).createSpreadsheetMonthFolder()
