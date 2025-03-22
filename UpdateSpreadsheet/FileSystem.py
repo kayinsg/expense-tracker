@@ -8,6 +8,13 @@ class FileSystem:
     def __init__(self, spreadsheetParentDirectory):
         self.spreadsheetParentDirectory = spreadsheetParentDirectory
 
+    def createSpreadsheetFile(self, parentDirectory):
+        currentDate = pendulum.now().format('YYYY-MM-DD')
+        monthFolderPath = FileSystem(parentDirectory).createSpreadsheetMonthFolder()
+        fileCreator = FileCreator(monthFolderPath)
+        workbook = SpreadsheetFileCreator(fileCreator, currentDate).create()
+        return workbook
+
     def createSpreadsheetMonthFolder(self):
         directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
         currentDate = pendulum.now().format('YYYY-MM-DD')
@@ -84,7 +91,7 @@ class SpreadsheetFileCreator(FileSystemInterface):
         return f'Week {weekWithinMonth}'
 
     def createSpreadsheetOnFileSystem(self, spreadsheetFileName):
-        return self.fileCreator.create(spreadsheetFileName)
+        return self.fileCreator.createFile(spreadsheetFileName)
 
     def getWorkbook(self, spreadsheetFilePath):
         return openpyxl.load_workbook(spreadsheetFilePath)
@@ -94,7 +101,7 @@ class FileCreator:
     def __init__(self, parentDirectory):
         self.parentDirectory = parentDirectory
 
-    def create(self, fileName):
+    def createFile(self, fileName):
        completeFileName = self.completeFileName(fileName) 
        self.createSpreadsheetFile(completeFileName)
        return completeFileName
