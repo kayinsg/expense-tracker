@@ -39,7 +39,8 @@ class MonthDirectory(FileSystemInterface):
         return pendulum.parse(currentDate).format('MMMM')
 
     def makeFolderRepresentingTheMonthOfSpreadsheet(self, monthName):
-        return self.folderCreator.createDirectory(monthName)
+        spreadsheetMonthDirectory = self.folderCreator.createDirectory(monthName)
+        return self.standardizePath(spreadsheetMonthDirectory)
 
 
 class DirectoryCreator:
