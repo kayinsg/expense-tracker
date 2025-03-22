@@ -4,9 +4,8 @@ import os
 
 
 class FileSystem:
-    def __init__(self, spreadsheetParentDirectory, currentDate):
+    def __init__(self, spreadsheetParentDirectory):
         self.spreadsheetParentDirectory = spreadsheetParentDirectory
-        self.currentDate = currentDate
 
     def createSpreadsheetMonthFolder(self):
         directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
