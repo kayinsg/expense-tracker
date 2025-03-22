@@ -1,5 +1,5 @@
 import unittest
-from FileSystem import MonthDirectory
+from FileSystem import MonthDirectory, DirectoryCreator
 
 class SpreadsheetTests(unittest.TestCase):
 
@@ -14,11 +14,9 @@ class SpreadsheetTests(unittest.TestCase):
                 return monthName
 
         parentDirectory = ""
-        directoryCreator = FakeDirectoryCreator(parentDirectory)
-        monthDirectory = MonthDirectory(directoryCreator, self.currentDate)
 
-        fullPath = monthDirectory.create()
+        monthFolderPath = FileSystem(parentDirectory, self.currentDate).createSpreadsheetMonthFolder()
 
-        self.assertEqual(fullPath, "March/")
+        self.assertEqual(monthFolderPath, "March/")
 
 unittest.main()
