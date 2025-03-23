@@ -13,18 +13,18 @@ class FileSystem:
         workbook = self.createSpreadsheetFile(monthFolder)
         return workbook
 
+    def createSpreadsheetMonthFolder(self):
+        directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
+        currentDate = pendulum.now().format('YYYY-MM-DD')
+        createdMonthDirectory = MonthDirectory(directoryCreator, currentDate).create()
+        return createdMonthDirectory
+
     def createSpreadsheetFile(self, parentDirectory):
         currentDate = pendulum.now().format('YYYY-MM-DD')
         monthFolderPath = FileSystem(parentDirectory).createSpreadsheetMonthFolder()
         fileCreator = FileCreator(monthFolderPath)
         workbook = SpreadsheetFileCreator(fileCreator, currentDate).create()
         return workbook
-
-    def createSpreadsheetMonthFolder(self):
-        directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
-        currentDate = pendulum.now().format('YYYY-MM-DD')
-        createdMonthDirectory = MonthDirectory(directoryCreator, currentDate).create()
-        return createdMonthDirectory
 
 class FileSystemInterface(ABC):
 
