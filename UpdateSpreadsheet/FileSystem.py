@@ -21,8 +21,7 @@ class FileSystem:
 
     def createSpreadsheetFile(self, parentDirectory):
         currentDate = pendulum.now().format('YYYY-MM-DD')
-        monthFolderPath = FileSystem(parentDirectory).createSpreadsheetMonthFolder()
-        fileCreator = FileCreator(monthFolderPath)
+        fileCreator = FileCreator(parentDirectory)
         workbook = SpreadsheetFileCreator(fileCreator, currentDate).create()
         return workbook
 
