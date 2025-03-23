@@ -1,5 +1,6 @@
 import unittest
-from FileSystem import MonthDirectory, DirectoryCreator
+from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
+import pendulum
 
 class SpreadsheetTests(unittest.TestCase):
 
@@ -14,10 +15,12 @@ class SpreadsheetTests(unittest.TestCase):
                 return monthName
 
         parentDirectory = ""
+        directoryCreator = FakeDirectoryCreator(parentDirectory)
+        monthDirectory = MonthDirectory(directoryCreator, self.currentDate)
 
-        monthFolderPath = FileSystem(parentDirectory, self.currentDate).createSpreadsheetMonthFolder()
+        fullPath = monthDirectory.create()
 
-        self.assertEqual(monthFolderPath, "March/")
+        self.assertEqual(fullPath, "March/")
 
 
     def testShouldCreateSpreadsheetFileRepresentingTheWeekNumberInMonthGivenCurrentDate(self):
@@ -44,7 +47,7 @@ class SpreadsheetTests(unittest.TestCase):
         fileCreator = FakeFileCreator(parentDirectory)
         weekWithinMonth = get_week_in_month(self.currentDate)
 
-        spreadSheetFilePath = FakeSpreadsheetFileCreator(fileCreator, self.currentDate).createSpreadsheet()
+        spreadSheetFilePath = FakeSpreadsheetFileCreator(fileCreator, self.currentDate).create()
 
         self.assertEqual(spreadSheetFilePath, f"{parentDirectory}Week {weekWithinMonth}.xlsx")
 
