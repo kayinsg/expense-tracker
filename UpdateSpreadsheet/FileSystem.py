@@ -134,15 +134,15 @@ class SpreadsheetPopulator:
         self.currentDate = currentDate
 
     def populate(self, workbook):
-        daysWithinWeek = self.getDaysWithinTheWeekOfCurrentDate(self.currentDate)
         cleanedWorkbook = self.removeDefaultWorksheet(workbook)
+        daysWithinWeek = self.getDaysWithinTheWeekOfCurrentDate(self.currentDate)
         return self.insertDateWorksheetsInWorkbook(cleanedWorkbook, daysWithinWeek)
-
-    def getDaysWithinTheWeekOfCurrentDate(self, currentDate):
-        return WeekNormalizer(currentDate).getWeekdays()
 
     def removeDefaultWorksheet(self, workbook):
         return DefaultWorksheetEraser(workbook).getCleanWorkbook()
+
+    def getDaysWithinTheWeekOfCurrentDate(self, currentDate):
+        return WeekNormalizer(currentDate).getWeekdays()
 
     def insertDateWorksheetsInWorkbook(self, workbook, daysWithinWeek):
         for day in daysWithinWeek:
