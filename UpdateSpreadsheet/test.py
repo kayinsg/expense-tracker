@@ -1,6 +1,7 @@
 import unittest
 from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator, WeekNormalizer
 import pendulum
+from colour_runner.runner import ColourTextTestRunner
 
 
 class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
@@ -100,4 +101,5 @@ class SpreadsheetTests(unittest.TestCase):
 
         self.assertEqual(spreadsheet['FilePath'], f"{parentDirectory}Week {weekWithinMonth}.xlsx")
 
-unittest.main()
+
+unittest.main(testRunner=ColourTextTestRunner())
