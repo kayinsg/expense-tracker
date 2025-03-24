@@ -1,7 +1,10 @@
 import unittest
 from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
 from WorkbookPopulator import WeekNormalizer
+from SpreadsheetWriter import SpreadsheetDataPopulator
 import pendulum
+import openpyxl
+from pandas import DataFrame
 from colour_runner.runner import ColourTextTestRunner
 
 
@@ -53,6 +56,7 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
             self.assertEqual(self.lastDayOfWeek(weekDaysStartingFromSunday), "Saturday")
             self.assertEqual(self.convertDateTimeObjectsToString(weekDaysStartingFromSunday),weekDaysInvolvingTheSucceedingMonth)
 
+
 class SpreadsheetTests(unittest.TestCase):
 
     currentDate = '2025-03-20'
@@ -101,6 +105,46 @@ class SpreadsheetTests(unittest.TestCase):
         spreadsheet = FakeSpreadsheetFileCreator(fileCreator, self.currentDate).create()
 
         self.assertEqual(spreadsheet['FilePath'], f"{parentDirectory}Week {weekWithinMonth}.xlsx")
+
+    def testShouldPlaceExtractedDataInCorrectDateWorksheetWhenSpreadsheetIsAlreadyPopulatedWithDateWorksheets(self) -> None:
+
+        class FakeWorkBook:
+            def __init__(self, currentDate):
+                self.currentDate = currentDate
+
+            @staticmethod
+            def dataInSpreadsheet(spreadsheet):
+                dummyList = []
+                for row in spreadsheet.iter_rows(min_row=1, max_col=spreadsheet.max_column, max_row=spreadsheet.max_row, values_only=True):
+                    rowCells = list()
+                    for cell in row:
+                        rowCells.append(cell)
+                    dummyList.append(rowCells)
+                return dummyList
+
+            def workbookWithWeekDays(self) -> openpyxl.Workbook:
+                workbook = openpyxl.Workbook()
+                currentDate: pendulum.datetime.DateTime = pendulum.parse(self.currentDate)
+                startOfWeek = currentDate.start_of('week')
+                daysWithinWeek = [startOfWeek.add(days=i).format("MMM.DD.YYYY") for i in range(7)]
+                defaultSheet: openpyxl.worksheet.worksheet.Worksheet = workbook.active
+                workbook.remove(defaultSheet)
+                for day in daysWithinWeek:
+                    workbook.create_sheet(day)
+                return workbook
+
+        data = {'Items': ['Candy', 'Orange', 'Chips'], 'Gross Price': [ 1, 1.50, 1.99 ], 'Final Price': [ 1.13, 1.76, 2.13 ], 'Taxes Paid': [ 0.13, 0.25, 0.35 ]}
+        dataFrame: DataFrame = DataFrame(data)
+        dataList = [['Items', 'Gross Price', 'Final Price', 'Taxes Paid'], ['Candy', 1.0, 1.13, 0.13], ['Orange', 1.5, 1.76, 0.25], ['Chips', 1.99, 2.13, 0.35]]
+        currentDate = 'Mar.20.2025'
+        workbook: openpyxl.Workbook = FakeWorkBook(self.currentDate).workbookWithWeekDays()
+
+        spreadsheetWithPopulatedCurrentDate = SpreadsheetDataPopulator(currentDate, dataFrame).populate(workbook)
+
+        dateWorksheet = spreadsheetWithPopulatedCurrentDate[currentDate]
+        spreadsheetData = FakeWorkBook.dataInSpreadsheet(dateWorksheet)
+
+        self.assertEqual(spreadsheetData, dataList)
 
 
 unittest.main(testRunner=ColourTextTestRunner())
