@@ -15,7 +15,9 @@ class FileSystem:
     def setUpSpreadsheet(self):
         monthFolder = self.createSpreadsheetMonthFolder()
         workbook = self.createSpreadsheetFile(monthFolder)
-        return workbook
+        worksheet = self.populateWorkbookWithWorksheetDates(workbook['Workbook'])
+        workbook['Workbook'].save(workbook['FilePath'])
+        return worksheet
 
     def createSpreadsheetMonthFolder(self):
         directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
@@ -26,8 +28,11 @@ class FileSystem:
     def createSpreadsheetFile(self, parentDirectory):
         currentDate = self.getCurrentDate()
         fileCreator = FileCreator(parentDirectory)
-        workbook = SpreadsheetFileCreator(fileCreator, currentDate).create()
-        return workbook
+        return SpreadsheetFileCreator(fileCreator, currentDate).create()
+
+    def populateWorkbookWithWorksheetDates(self, workbook): 
+        return SpreadsheetPopulator(self.getCurrentDate()).populate(workbook)
+
 
 class FileSystemInterface(ABC):
 
@@ -40,6 +45,7 @@ class FileSystemInterface(ABC):
     @abstractmethod
     def create(self):
         pass
+
 
 class MonthDirectory(FileSystemInterface):
     def __init__(self, folderCreator, currentDate):
@@ -89,7 +95,8 @@ class SpreadsheetFileCreator(FileSystemInterface):
         weekWithinMonth = self.getWeekInMonth(self.currentDate)
         spreadsheetFileName = self.getSpreadsheetFileName(weekWithinMonth)
         spreadsheetFile =  self.createSpreadsheetOnFileSystem(spreadsheetFileName)
-        return self.getWorkbook(spreadsheetFile)
+        workbook = self.getWorkbook(spreadsheetFile)
+        return {'FilePath': spreadsheetFile, 'Workbook': workbook}
 
     def getWeekInMonth(self, isoDate):
         date = pendulum.parse(isoDate)
@@ -120,3 +127,43 @@ class FileCreator:
     def createSpreadsheetFile(self, completeFileName):
         workbook = openpyxl.Workbook()
         workbook.save(completeFileName)
+
+
+class SpreadsheetPopulator:
+    def __init__(self, currentDate):
+        self.currentDate = currentDate
+
+    def populate(self, workbook):
+        currentDate = self.encodeCurrentDate(self.currentDate)
+        daysWithinWeek = self.getDaysWithinTheWeekOfCurrentDate(currentDate)
+        return self.insertDateWorksheetsInWorkbook(workbook, daysWithinWeek)
+
+    def encodeCurrentDate(self, currentDate):
+        return pendulum.parse(currentDate)
+
+    def getDaysWithinTheWeekOfCurrentDate(self, currentDate):
+        startOfWeek = currentDate.start_of('week')
+        getDaysOfWeek = lambda dayNumber: startOfWeek.add(days=dayNumber).format("MMM.DD.YYYY")
+        return list(map(getDaysOfWeek, range(7)))
+
+    def insertDateWorksheetsInWorkbook(self, workbook, daysWithinWeek):
+        return DateWorksheetInserter(workbook).insert(daysWithinWeek)
+
+
+class DateWorksheetInserter:
+    def __init__(self, workbook):
+        self.workbook = workbook
+
+    def insert(self, daysWithinWeek):
+        defaultWorksheet = self.getDefaultWorksheet(self.workbook)
+        self.workbook.remove(defaultWorksheet)
+        return self.insertDateWorksheetsInWorkbook(daysWithinWeek)
+
+    def getDefaultWorksheet(self, workbook):
+        defaultWorksheet = workbook.active
+        return defaultWorksheet
+
+    def insertDateWorksheetsInWorkbook(self, weekdays):
+        for day in weekdays:
+            self.workbook.create_sheet(day)
+        return self.workbook
