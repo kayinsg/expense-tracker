@@ -31,6 +31,16 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
             self.assertEqual(self.lastDayOfWeek(weekDaysStartingFromSunday), "Saturday")
             self.assertEqual(self.convertDateTimeObjectsToString(weekDaysStartingFromSunday), weekDaysInvolvingThePreviousMonth)
 
+        def testSameMonth(self):
+            dateWithSameMonthWeekdays = '2025-03-27'
+            weekDaysInvolvingOnlyTheSameMonth = ['Mar.23.2025', 'Mar.24.2025', 'Mar.25.2025', 'Mar.26.2025', 'Mar.27.2025', 'Mar.28.2025', 'Mar.29.2025']
+
+            weekDaysStartingFromSunday = self.FakeWeekNormalizer(dateWithSameMonthWeekdays).getWeekdays()
+
+            self.assertEqual(self.firstDayOfWeek(weekDaysStartingFromSunday), "Sunday")
+            self.assertEqual(self.lastDayOfWeek(weekDaysStartingFromSunday), "Saturday")
+            self.assertEqual(self.convertDateTimeObjectsToString(weekDaysStartingFromSunday), weekDaysInvolvingOnlyTheSameMonth)
+
 
 class SpreadsheetTests(unittest.TestCase):
 
