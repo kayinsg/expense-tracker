@@ -1,6 +1,36 @@
 import unittest
-from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
+from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator, WeekNormalizer
 import pendulum
+
+
+class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
+        @staticmethod
+        def convertDateTimeObjectsToString(dateTimeObjects):
+            convert = lambda dateTime: dateTime.format('MMM.DD.YYYY')
+            return list(map(convert, dateTimeObjects))
+
+        @staticmethod
+        def firstDayOfWeek(weekDays):
+            return weekDays[0].format('dddd')
+
+        @staticmethod
+        def lastDayOfWeek(weekDays):
+            return weekDays[-1].format('dddd')
+
+        class FakeWeekNormalizer(WeekNormalizer): 
+            def convertDateTimeObjectsToString(self, dateTimeObjects):
+                return dateTimeObjects
+
+        def testPreviousMonth(self):
+            dateWithPreviousMonthWeekdays = '2025-03-01'
+            weekDaysInvolvingThePreviousMonth = ['Feb.23.2025', 'Feb.24.2025', 'Feb.25.2025', 'Feb.26.2025', 'Feb.27.2025', 'Feb.28.2025', 'Mar.01.2025']
+
+            weekDaysStartingFromSunday = self.FakeWeekNormalizer(dateWithPreviousMonthWeekdays).getWeekdays()
+
+            self.assertEqual(self.firstDayOfWeek(weekDaysStartingFromSunday), "Sunday")
+            self.assertEqual(self.lastDayOfWeek(weekDaysStartingFromSunday), "Saturday")
+            self.assertEqual(self.convertDateTimeObjectsToString(weekDaysStartingFromSunday), weekDaysInvolvingThePreviousMonth)
+
 
 class SpreadsheetTests(unittest.TestCase):
 
