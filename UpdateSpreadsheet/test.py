@@ -47,8 +47,8 @@ class SpreadsheetTests(unittest.TestCase):
         fileCreator = FakeFileCreator(parentDirectory)
         weekWithinMonth = get_week_in_month(self.currentDate)
 
-        spreadSheetFilePath = FakeSpreadsheetFileCreator(fileCreator, self.currentDate).create()
+        spreadsheet = FakeSpreadsheetFileCreator(fileCreator, self.currentDate).create()
 
-        self.assertEqual(spreadSheetFilePath, f"{parentDirectory}Week {weekWithinMonth}.xlsx")
+        self.assertEqual(spreadsheet['FilePath'], f"{parentDirectory}Week {weekWithinMonth}.xlsx")
 
 unittest.main()
