@@ -1,7 +1,7 @@
 from pandas import DataFrame
 import openpyxl
 
-class SpreadsheetDataPopulator:
+class SpreadsheetDataFrameWriter:
     def __init__(self, currentDate: str, dataFrame: DataFrame):
         self.currentDate = currentDate
         self.dataFrame = dataFrame
