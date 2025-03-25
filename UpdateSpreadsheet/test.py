@@ -1,5 +1,6 @@
 import unittest
-from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator, WeekNormalizer
+from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
+from WorkbookPopulator import WeekNormalizer
 import pendulum
 from colour_runner.runner import ColourTextTestRunner
 
