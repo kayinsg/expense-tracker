@@ -1,7 +1,7 @@
 import unittest
 from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
 from WorkbookPopulator import WeekNormalizer
-from SpreadsheetWriter import SpreadsheetDataPopulator
+from SpreadsheetWriter import SpreadsheetDataFrameWriter
 import pendulum
 import openpyxl
 from pandas import DataFrame
@@ -129,7 +129,7 @@ class SpreadsheetWriterTest(unittest.TestCase):
         currentDate = 'Mar.20.2025'
         workbook: openpyxl.Workbook = workbookWithDateWorksheets(currentDate)
 
-        spreadsheetWithPopulatedCurrentDate = SpreadsheetDataPopulator(currentDate, dataFrame).populate(workbook)
+        spreadsheetWithPopulatedCurrentDate = SpreadsheetDataFrameWriter(currentDate, dataFrame).populate(workbook)
 
         dateWorksheet = spreadsheetWithPopulatedCurrentDate[currentDate]
         spreadsheetData = dataInSpreadsheet(dateWorksheet)
