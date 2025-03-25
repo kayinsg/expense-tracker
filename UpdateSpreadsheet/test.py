@@ -115,9 +115,9 @@ class SpreadsheetWriterTest(unittest.TestCase):
 
             def workbookWithWeekDays(self) -> openpyxl.Workbook:
                 workbook = openpyxl.Workbook()
-                currentDate: pendulum.datetime.DateTime = pendulum.parse(self.currentDate)
+                currentDate = pendulum.parse(self.currentDate)
                 startOfWeek = currentDate.start_of('week')
-                daysWithinWeek = [startOfWeek.add(days=i).format("MMM.DD.YYYY") for i in range(7)]
+                daysWithinWeek = [startOfWeek.add(days=i).format("YYYY-MM-DD") for i in range(7)]
                 defaultSheet: openpyxl.worksheet.worksheet.Worksheet = workbook.active
                 workbook.remove(defaultSheet)
                 for day in daysWithinWeek:
@@ -127,8 +127,8 @@ class SpreadsheetWriterTest(unittest.TestCase):
         data = {'Items': ['Candy', 'Orange', 'Chips'], 'Gross Price': [ 1, 1.50, 1.99 ], 'Final Price': [ 1.13, 1.76, 2.13 ], 'Taxes Paid': [ 0.13, 0.25, 0.35 ]}
         dataFrame: DataFrame = DataFrame(data)
         dataList = [['Items', 'Gross Price', 'Final Price', 'Taxes Paid'], ['Candy', 1.0, 1.13, 0.13], ['Orange', 1.5, 1.76, 0.25], ['Chips', 1.99, 2.13, 0.35]]
-        currentDate = 'Mar.20.2025'
-        workbook: openpyxl.Workbook = FakeWorkBook(self.currentDate).workbookWithWeekDays()
+        currentDate = '2025-03-20'
+        workbook: openpyxl.Workbook = FakeWorkBook(currentDate).workbookWithWeekDays()
 
         spreadsheetWithPopulatedCurrentDate = SpreadsheetDataPopulator(currentDate, dataFrame).populate(workbook)
 
