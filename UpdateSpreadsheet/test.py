@@ -9,10 +9,6 @@ from colour_runner.runner import ColourTextTestRunner
 
 
 class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
-        @staticmethod
-        def convertDateTimeObjectsToString(dateTimeObjects):
-            convert = lambda dateTime: dateTime.format('MMM.DD.YYYY')
-            return list(map(convert, dateTimeObjects))
 
         @staticmethod
         def firstDayOfWeek(weekDays):
@@ -22,39 +18,29 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
         def lastDayOfWeek(weekDays):
             return weekDays[-1].format('dddd')
 
-        class FakeWeekNormalizer(WeekNormalizer): 
-            def convertDateTimeObjectsToString(self, dateTimeObjects):
-                return dateTimeObjects
-
         def testPreviousMonth(self):
             dateWithPreviousMonthWeekdays = '2025-03-01'
             weekDaysInvolvingThePreviousMonth = ['Feb.23.2025', 'Feb.24.2025', 'Feb.25.2025', 'Feb.26.2025', 'Feb.27.2025', 'Feb.28.2025', 'Mar.01.2025']
 
-            weekDaysStartingFromSunday = self.FakeWeekNormalizer(dateWithPreviousMonthWeekdays).getWeekdays()
+            weekDaysStartingFromSunday = WeekNormalizer(dateWithPreviousMonthWeekdays).getWeekdays()
 
-            self.assertEqual(self.firstDayOfWeek(weekDaysStartingFromSunday), "Sunday")
-            self.assertEqual(self.lastDayOfWeek(weekDaysStartingFromSunday), "Saturday")
-            self.assertEqual(self.convertDateTimeObjectsToString(weekDaysStartingFromSunday), weekDaysInvolvingThePreviousMonth)
+            self.assertEqual(weekDaysStartingFromSunday, weekDaysInvolvingThePreviousMonth)
 
         def testSameMonth(self):
             dateWithSameMonthWeekdays = '2025-03-27'
             weekDaysInvolvingOnlyTheSameMonth = ['Mar.23.2025', 'Mar.24.2025', 'Mar.25.2025', 'Mar.26.2025', 'Mar.27.2025', 'Mar.28.2025', 'Mar.29.2025']
 
-            weekDaysStartingFromSunday = self.FakeWeekNormalizer(dateWithSameMonthWeekdays).getWeekdays()
+            weekDaysStartingFromSunday = WeekNormalizer(dateWithSameMonthWeekdays).getWeekdays()
 
-            self.assertEqual(self.firstDayOfWeek(weekDaysStartingFromSunday), "Sunday")
-            self.assertEqual(self.lastDayOfWeek(weekDaysStartingFromSunday), "Saturday")
-            self.assertEqual(self.convertDateTimeObjectsToString(weekDaysStartingFromSunday), weekDaysInvolvingOnlyTheSameMonth)
+            self.assertEqual(weekDaysStartingFromSunday, weekDaysInvolvingOnlyTheSameMonth)
 
         def testSucceedingMonth(self):
             dateWithSuceedingMonthWeekdays = '2025-04-05'
             weekDaysInvolvingTheSucceedingMonth = ['Mar.30.2025', 'Mar.31.2025', 'Apr.01.2025', 'Apr.02.2025', 'Apr.03.2025', 'Apr.04.2025', 'Apr.05.2025']
 
-            weekDaysStartingFromSunday = self.FakeWeekNormalizer(dateWithSuceedingMonthWeekdays).getWeekdays()
+            weekDaysStartingFromSunday = WeekNormalizer(dateWithSuceedingMonthWeekdays).getWeekdays()
 
-            self.assertEqual(self.firstDayOfWeek(weekDaysStartingFromSunday), "Sunday")
-            self.assertEqual(self.lastDayOfWeek(weekDaysStartingFromSunday), "Saturday")
-            self.assertEqual(self.convertDateTimeObjectsToString(weekDaysStartingFromSunday),weekDaysInvolvingTheSucceedingMonth)
+            self.assertEqual(weekDaysStartingFromSunday,weekDaysInvolvingTheSucceedingMonth)
 
 
 class SpreadsheetTests(unittest.TestCase):
