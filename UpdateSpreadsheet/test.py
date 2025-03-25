@@ -108,26 +108,26 @@ class SpreadsheetWriterTest(unittest.TestCase):
                 dummyList.append(rowCells)
             return dummyList
 
-        class FakeWorkBook:
-            def __init__(self, currentDate):
-                self.currentDate = currentDate
-
-            def workbookWithWeekDays(self) -> openpyxl.Workbook:
-                workbook = openpyxl.Workbook()
-                currentDate = pendulum.parse(self.currentDate)
-                startOfWeek = currentDate.start_of('week')
-                daysWithinWeek = [startOfWeek.add(days=i).format("YYYY-MM-DD") for i in range(7)]
-                defaultSheet: openpyxl.worksheet.worksheet.Worksheet = workbook.active
-                workbook.remove(defaultSheet)
-                for day in daysWithinWeek:
-                    workbook.create_sheet(day)
-                return workbook
+        def workbookWithDateWorksheets(currentDate: str) -> openpyxl.Workbook:
+            date = pendulum.from_format(currentDate, 'MMM.DD.YYYY')
+            start_date = date.start_of('week')  # Default is Monday
+            if date.day_of_week != pendulum.SUNDAY:  # Adjust to Sunday start
+                start_date = start_date.subtract(days=1)
+            
+            wb = openpyxl.Workbook()
+            wb.remove(wb.active)
+            
+            for day in range(7):
+                sheet_date = start_date.add(days=day)
+                wb.create_sheet(title=sheet_date.format('MMM.DD.YYYY'))
+            
+            return wb
 
         data = {'Items': ['Candy', 'Orange', 'Chips'], 'Gross Price': [ 1, 1.50, 1.99 ], 'Final Price': [ 1.13, 1.76, 2.13 ], 'Taxes Paid': [ 0.13, 0.25, 0.35 ]}
         dataFrame: DataFrame = DataFrame(data)
         dataList = [['Items', 'Gross Price', 'Final Price', 'Taxes Paid'], ['Candy', 1.0, 1.13, 0.13], ['Orange', 1.5, 1.76, 0.25], ['Chips', 1.99, 2.13, 0.35]]
         currentDate = 'Mar.20.2025'
-        workbook: openpyxl.Workbook = FakeWorkBook(currentDate).workbookWithWeekDays()
+        workbook: openpyxl.Workbook = workbookWithDateWorksheets(currentDate)
 
         spreadsheetWithPopulatedCurrentDate = SpreadsheetDataPopulator(currentDate, dataFrame).populate(workbook)
 
