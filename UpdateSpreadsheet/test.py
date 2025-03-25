@@ -43,7 +43,7 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
             self.assertEqual(weekDaysStartingFromSunday,weekDaysInvolvingTheSucceedingMonth)
 
 
-class SpreadsheetTests(unittest.TestCase):
+class SpreadsheetFileSystemTest(unittest.TestCase):
 
     currentDate = '2025-03-20'
 
@@ -93,6 +93,9 @@ class SpreadsheetTests(unittest.TestCase):
         spreadsheet = FakeSpreadsheetFileCreator(fileCreator, self.currentDate).create()
 
         self.assertEqual(spreadsheet['FilePath'], f"{parentDirectory}Week {weekWithinMonth}.xlsx")
+
+
+class SpreadsheetWriterTest(unittest.TestCase):
 
     def testShouldPlaceExtractedDataInCorrectDateWorksheetWhenSpreadsheetIsAlreadyPopulatedWithDateWorksheets(self) -> None:
 
