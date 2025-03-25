@@ -48,6 +48,7 @@ class SpreadsheetTests(unittest.TestCase):
     currentDate = '2025-03-20'
 
     def testShouldCreateFolderRepresentingMonthWhenDateIsGiven(self):
+
         class FakeDirectoryCreator(DirectoryCreator):
             def __init__(self, parentDirectory):
                 self.parentDirectory = parentDirectory
@@ -65,6 +66,7 @@ class SpreadsheetTests(unittest.TestCase):
 
 
     def testShouldCreateSpreadsheetFileRepresentingTheWeekNumberInMonthGivenCurrentDate(self):
+
         class FakeSpreadsheetFileCreator(SpreadsheetFileCreator):
             def __init__(self, fileCreator, currentDate):
                 self.fileCreator = fileCreator
