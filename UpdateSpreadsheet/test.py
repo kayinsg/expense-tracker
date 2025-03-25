@@ -99,19 +99,18 @@ class SpreadsheetWriterTest(unittest.TestCase):
 
     def testShouldPlaceExtractedDataInCorrectDateWorksheetWhenSpreadsheetIsAlreadyPopulatedWithDateWorksheets(self) -> None:
 
+        def dataInSpreadsheet(spreadsheet):
+            dummyList = []
+            for row in spreadsheet.iter_rows(min_row=1, max_col=spreadsheet.max_column, max_row=spreadsheet.max_row, values_only=True):
+                rowCells = list()
+                for cell in row:
+                    rowCells.append(cell)
+                dummyList.append(rowCells)
+            return dummyList
+
         class FakeWorkBook:
             def __init__(self, currentDate):
                 self.currentDate = currentDate
-
-            @staticmethod
-            def dataInSpreadsheet(spreadsheet):
-                dummyList = []
-                for row in spreadsheet.iter_rows(min_row=1, max_col=spreadsheet.max_column, max_row=spreadsheet.max_row, values_only=True):
-                    rowCells = list()
-                    for cell in row:
-                        rowCells.append(cell)
-                    dummyList.append(rowCells)
-                return dummyList
 
             def workbookWithWeekDays(self) -> openpyxl.Workbook:
                 workbook = openpyxl.Workbook()
@@ -133,7 +132,7 @@ class SpreadsheetWriterTest(unittest.TestCase):
         spreadsheetWithPopulatedCurrentDate = SpreadsheetDataPopulator(currentDate, dataFrame).populate(workbook)
 
         dateWorksheet = spreadsheetWithPopulatedCurrentDate[currentDate]
-        spreadsheetData = FakeWorkBook.dataInSpreadsheet(dateWorksheet)
+        spreadsheetData = dataInSpreadsheet(dateWorksheet)
 
         self.assertEqual(spreadsheetData, dataList)
 
