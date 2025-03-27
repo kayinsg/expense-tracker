@@ -97,7 +97,7 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
 
 class SpreadsheetWriterTest(unittest.TestCase):
 
-    def testShouldPlaceExtractedDataInCorrectDateWorksheetWhenSpreadsheetIsAlreadyPopulatedWithDateWorksheets(self) -> None:
+    def testShouldPlaceDataFrameInCorrectDateWorksheetWhenSpreadsheetIsAlreadyPopulatedWithDateWorksheets(self) -> None:
 
         def dataInSpreadsheet(spreadsheet):
             dummyList = []
