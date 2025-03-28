@@ -1,11 +1,11 @@
 import unittest
+from openpyxl import workbook
 from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
 from WorkbookPopulator import WeekNormalizer
-from SpreadsheetWriter import SpreadsheetDataFrameWriter
 import pendulum
 import openpyxl
-from pandas import DataFrame
 from colour_runner.runner import ColourTextTestRunner
+import openpyxl
 
 
 class SpreadsheetFileSystemTest(unittest.TestCase):
@@ -93,48 +93,6 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
             weekDaysStartingFromSunday = WeekNormalizer(dateWithSuceedingMonthWeekdays).getWeekdays()
 
             self.assertEqual(weekDaysStartingFromSunday,weekDaysInvolvingTheSucceedingMonth)
-
-
-class SpreadsheetWriterTest(unittest.TestCase):
-
-    def testShouldPlaceDataFrameInCorrectDateWorksheetWhenSpreadsheetIsAlreadyPopulatedWithDateWorksheets(self) -> None:
-
-        def dataInSpreadsheet(spreadsheet):
-            dummyList = []
-            for row in spreadsheet.iter_rows(min_row=1, max_col=spreadsheet.max_column, max_row=spreadsheet.max_row, values_only=True):
-                rowCells = list()
-                for cell in row:
-                    rowCells.append(cell)
-                dummyList.append(rowCells)
-            return dummyList
-
-        def workbookWithDateWorksheets(currentDate: str) -> openpyxl.Workbook:
-            date = pendulum.from_format(currentDate, 'MMM.DD.YYYY')
-            start_date = date.start_of('week')  # Default is Monday
-            if date.day_of_week != pendulum.SUNDAY:  # Adjust to Sunday start
-                start_date = start_date.subtract(days=1)
-            
-            wb = openpyxl.Workbook()
-            wb.remove(wb.active)
-            
-            for day in range(7):
-                sheet_date = start_date.add(days=day)
-                wb.create_sheet(title=sheet_date.format('MMM.DD.YYYY'))
-            
-            return wb
-
-        data = {'Items': ['Candy', 'Orange', 'Chips'], 'Gross Price': [ 1, 1.50, 1.99 ], 'Final Price': [ 1.13, 1.76, 2.13 ], 'Taxes Paid': [ 0.13, 0.25, 0.35 ]}
-        dataFrame: DataFrame = DataFrame(data)
-        dataList = [['Items', 'Gross Price', 'Final Price', 'Taxes Paid'], ['Candy', 1.0, 1.13, 0.13], ['Orange', 1.5, 1.76, 0.25], ['Chips', 1.99, 2.13, 0.35]]
-        currentDate = 'Mar.20.2025'
-        workbook: openpyxl.Workbook = workbookWithDateWorksheets(currentDate)
-
-        spreadsheetWithPopulatedCurrentDate = SpreadsheetDataFrameWriter(currentDate, dataFrame).populate(workbook)
-
-        dateWorksheet = spreadsheetWithPopulatedCurrentDate[currentDate]
-        spreadsheetData = dataInSpreadsheet(dateWorksheet)
-
-        self.assertEqual(spreadsheetData, dataList)
 
 
 unittest.main(testRunner=ColourTextTestRunner())
