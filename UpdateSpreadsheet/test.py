@@ -7,7 +7,7 @@ import openpyxl
 from colour_runner.runner import ColourTextTestRunner
 import openpyxl
 import pandas
-from SpreadsheetWriter import consolidateSeriesAndDataFrame
+from SpreadsheetWriter import DataConsolidator
 
 
 class SpreadsheetFileSystemTest(unittest.TestCase):
@@ -118,7 +118,7 @@ class TestPandasDataStructureConverter(unittest.TestCase):
                 [3.00, 4.49, 5.02, 0.73]
             ]
 
-        result = consolidateSeriesAndDataFrame(dataFrame(), series())
+        result = DataConsolidator(dataFrame()).consolidate(series())
 
         self.assertEqual(result, output())
 
