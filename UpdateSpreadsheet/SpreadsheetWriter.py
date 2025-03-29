@@ -25,9 +25,25 @@ class DataConsolidator:
         return list(map(lambda header: series.loc[header].tolist(), seriesHeaders))
 
     def finalizeNestedList(self, nestedListComponents):
-        nestedList = [ ]
-        nestedList.append(nestedListComponents['Data Frame Columns'])
-        nestedList.extend(nestedListComponents['Data Frame Values'])
-        nestedList.append(nestedListComponents['Series Headers'])
-        nestedList.append(nestedListComponents['Series Data'])
-        return nestedList
+        finalNestedList = [ ]
+
+        addToNestedList = lambda rowValues: finalNestedList.append(rowValues)
+        flattenListThenAddToNestedList = lambda rowValues: finalNestedList.extend(rowValues)
+
+        for key in nestedListComponents:
+            rowValues = nestedListComponents[key]
+            if self.isAListOfLists(rowValues):
+                flattenListThenAddToNestedList(rowValues)
+            else:
+                addToNestedList(rowValues)
+
+        return finalNestedList
+
+    def isAListOfLists(self, inputList):
+        if not isinstance(inputList, list):
+            return False
+        
+        for element in inputList:
+            if not isinstance(element, list):
+                return False
+        return True
