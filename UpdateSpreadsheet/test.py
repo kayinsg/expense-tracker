@@ -6,6 +6,8 @@ import pendulum
 import openpyxl
 from colour_runner.runner import ColourTextTestRunner
 import openpyxl
+import pandas
+from SpreadsheetWriter import consolidateSeriesAndDataFrame
 
 
 class SpreadsheetFileSystemTest(unittest.TestCase):
@@ -93,6 +95,32 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
             weekDaysStartingFromSunday = WeekNormalizer(dateWithSuceedingMonthWeekdays).getWeekdays()
 
             self.assertEqual(weekDaysStartingFromSunday,weekDaysInvolvingTheSucceedingMonth)
+
+
+class TestPandasDataStructureConverter(unittest.TestCase):
+
+    def testShouldConvertDataFrameAndSeriesToNestedList(self):
+        def dataFrame():
+            data = {'Items': ['Candy', 'Orange', 'Chips'], 'Gross Price': [ 1.0, 1.5, 1.99 ], 'Final Price': [1.13, 1.76, 2.13 ], 'Taxes Paid': [ 0.13, 0.25, 0.35 ]}
+            return pandas.DataFrame(data)
+
+        def series():
+            data = {'Total Items': 3, 'Total Gross Price':4.49, 'Total Final Price':5.02, 'Total Taxes Paid': 0.73}
+            return pandas.Series(data)
+
+        def output():
+            return [
+                ['Items', 'Gross Price', 'Final Price', 'Taxes Paid'],
+                ['Candy', 1.00, 1.13, 0.13],
+                ['Orange', 1.50, 1.76, 0.25],
+                ['Chips', 1.99, 2.13, 0.35],
+                ['Total Items', 'Total Gross Price', 'Total Final Price', 'Total Taxes Paid'],
+                [3.00, 4.49, 5.02, 0.73]
+            ]
+
+        result = consolidateSeriesAndDataFrame(dataFrame(), series())
+
+        self.assertEqual(result, output())
 
 
 unittest.main(testRunner=ColourTextTestRunner())
