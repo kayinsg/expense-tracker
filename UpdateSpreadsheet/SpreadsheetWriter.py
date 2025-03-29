@@ -1,25 +1,33 @@
-from pandas import DataFrame
 
-def consolidateSeriesAndDataFrame(dataFrame: pandas.DataFrame, series: pandas.Series):
-    result = [ ]
 
-    dataFrameColumns =  [ ]
-    for column in dataFrame.columns.tolist():
-        dataFrameColumns.append(column)
-    result.append(dataFrameColumns)
+class DataConsolidator:
+    def __init__(self, dataFrame):
+        self.dataFrame = dataFrame
 
-    for dataStructure in dataFrame.iterrows():
-        result.append(dataStructure[1].tolist())
+    def consolidate(self, series):
+        dataFrameColumns = self.getDataFrameColumns(self.dataFrame)
+        dataFrameValues = self.getDataFrameRowValues(self.dataFrame)
+        seriesHeaders = self.getSeriesHeaders(series)
+        seriesData = self.getSeriesData(series, seriesHeaders)
+        nestedListComponents = {'Data Frame Columns': dataFrameColumns, 'Data Frame Values': dataFrameValues, 'Series Headers': seriesHeaders, 'Series Data': seriesData}
+        return self.finalizeNestedList(nestedListComponents)
 
-    seriesHeaders = [ ]
-    for index in series.index.tolist():
-        seriesHeaders.append(index)
-    result.append(seriesHeaders)
+    def getDataFrameColumns(self, dataFrame):
+        return list(map(lambda x: x, dataFrame.columns.tolist()))
 
-    seriesData = [ ]
-    for header in seriesHeaders:
-        seriesData.append(series.loc[header].tolist())
+    def getDataFrameRowValues(self, dataFrame):
+        return list(map(lambda dataStructure: dataStructure[1].tolist(),  dataFrame.iterrows()))
 
-    result.append(seriesData)
+    def getSeriesHeaders(self, series):
+        return list(map(lambda x: x, series.index.tolist()))
 
-    return result
+    def getSeriesData(self, series, seriesHeaders):
+        return list(map(lambda header: series.loc[header].tolist(), seriesHeaders))
+
+    def finalizeNestedList(self, nestedListComponents):
+        nestedList = [ ]
+        nestedList.append(nestedListComponents['Data Frame Columns'])
+        nestedList.extend(nestedListComponents['Data Frame Values'])
+        nestedList.append(nestedListComponents['Series Headers'])
+        nestedList.append(nestedListComponents['Series Data'])
+        return nestedList
