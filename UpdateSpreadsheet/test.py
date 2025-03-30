@@ -31,7 +31,6 @@ class SpreadsheetFileSystemTest(unittest.TestCase):
 
         self.assertEqual(fullPath, "March/")
 
-
     def testShouldCreateSpreadsheetFileRepresentingTheWeekNumberInMonthGivenCurrentDate(self):
 
         class FakeSpreadsheetFileCreator(SpreadsheetFileCreator):
@@ -72,7 +71,7 @@ class WorksheetPopulationTest(unittest.TestCase):
         def lastDayOfWeek(weekDays):
             return weekDays[-1].format('dddd')
 
-        def testPreviousMonth(self):
+        def testShouldAccountForDaysOfWeekGivenDaysFromPreviousMonth(self):
             dateWithPreviousMonthWeekdays = '2025-03-01'
             weekDaysInvolvingThePreviousMonth = ['Feb.23.2025', 'Feb.24.2025', 'Feb.25.2025', 'Feb.26.2025', 'Feb.27.2025', 'Feb.28.2025', 'Mar.01.2025']
 
@@ -80,7 +79,7 @@ class WorksheetPopulationTest(unittest.TestCase):
 
             self.assertEqual(weekDaysStartingFromSunday, weekDaysInvolvingThePreviousMonth)
 
-        def testSameMonth(self):
+        def testShouldAccountForDaysOfWeekGivenDaysFromTheSameMonth(self):
             dateWithSameMonthWeekdays = '2025-03-27'
             weekDaysInvolvingOnlyTheSameMonth = ['Mar.23.2025', 'Mar.24.2025', 'Mar.25.2025', 'Mar.26.2025', 'Mar.27.2025', 'Mar.28.2025', 'Mar.29.2025']
 
@@ -88,7 +87,7 @@ class WorksheetPopulationTest(unittest.TestCase):
 
             self.assertEqual(weekDaysStartingFromSunday, weekDaysInvolvingOnlyTheSameMonth)
 
-        def testSucceedingMonth(self):
+        def testShouldAccountForDaysOfWeekGivenDaysFromSucceedingMonth(self):
             dateWithSuceedingMonthWeekdays = '2025-04-05'
             weekDaysInvolvingTheSucceedingMonth = ['Mar.30.2025', 'Mar.31.2025', 'Apr.01.2025', 'Apr.02.2025', 'Apr.03.2025', 'Apr.04.2025', 'Apr.05.2025']
 
