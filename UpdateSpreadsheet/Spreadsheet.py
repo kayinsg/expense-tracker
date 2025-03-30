@@ -38,44 +38,6 @@ class SpreadsheetInterface(ABC):
             'Desist from trying to instantiate'
         )
 
-class SpreadsheetCreator:
-
-    @classmethod
-    def workbook(cls, filename: str) -> ExcelWorkbook:
-        try:
-            return load_workbook(
-                filename, keep_vba=True, keep_links=True
-            )
-        except FileNotFoundError:
-            print('[ ERROR ] File Not Found Creating One Now')
-            return openpyxl.Workbook()
-
-    def apply(self, filePath: str) -> SpreadsheetDetails:
-        workbook: ExcelWorkbook = SpreadsheetCreator.workbook(filePath)
-        self._removeUndesiredWorksheets(workbook)
-        worksheet: ExcelWorksheet = self._createDateWorksheet(workbook)
-        return SpreadsheetDetails(
-            filePath,
-            workbook,
-            worksheet
-        )
-
-    def _removeUndesiredWorksheets(self, workbook: ExcelWorkbook) -> None:
-        worksheetKeyword = "Budget"
-        listOfWorksheets: list[ExcelWorksheet] = workbook.worksheets
-        for worksheet in listOfWorksheets:
-            worksheetName = str(worksheet)
-            if worksheetKeyword in worksheetName:
-                pass
-            else:
-                workbook.remove(worksheet)
-
-    def _createDateWorksheet(self, workbook: ExcelWorkbook) -> ExcelWorksheet:
-        formattedCurrentDate = pendulum.now().format("MMM.DD.YYYY")
-        worksheetName = f"{formattedCurrentDate} Budget"
-        dateWorksheet = workbook.create_sheet(worksheetName, 0)
-        return dateWorksheet
-
 
 class SpreadsheetWriter(SpreadsheetInterface):
     def __init__(
