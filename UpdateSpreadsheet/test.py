@@ -1,5 +1,5 @@
 import unittest
-from openpyxl import workbook
+from openpyxl import Workbook
 from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
 from WorkbookPopulator import WeekNormalizer
 import pendulum
@@ -7,7 +7,7 @@ import openpyxl
 from colour_runner.runner import ColourTextTestRunner
 import openpyxl
 import pandas
-from SpreadsheetWriter import DataConsolidator
+from SpreadsheetWriter import WorksheetDataDepositor
 
 
 class SpreadsheetFileSystemTest(unittest.TestCase):
@@ -97,9 +97,19 @@ class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
             self.assertEqual(weekDaysStartingFromSunday,weekDaysInvolvingTheSucceedingMonth)
 
 
-class TestPandasDataStructureConverter(unittest.TestCase):
+class InsertionOfDataInSpreadsheetTest(unittest.TestCase):
 
-    def testShouldConvertDataFrameAndSeriesToNestedList(self):
+    def testShouldPlaceDataframeAndSeriesInSpreadsheetAfterBeingConvertedToNestedList(self):
+
+        def getSheetData(workbook, worksheetName):
+            if worksheetName not in workbook.sheetnames:
+                raise ValueError(f"Worksheet '{worksheetName}' not found in workbook")
+            worksheet = workbook[worksheetName]
+            data = []
+            for row in worksheet.iter_rows(values_only=True):
+                data.append(list(row))
+            return data
+
         def dataFrame():
             data = {'Items': ['Candy', 'Orange', 'Chips'], 'Gross Price': [ 1.0, 1.5, 1.99 ], 'Final Price': [1.13, 1.76, 2.13 ], 'Taxes Paid': [ 0.13, 0.25, 0.35 ]}
             return pandas.DataFrame(data)
@@ -108,7 +118,7 @@ class TestPandasDataStructureConverter(unittest.TestCase):
             data = {'Total Items': 3, 'Total Gross Price':4.49, 'Total Final Price':5.02, 'Total Taxes Paid': 0.73}
             return pandas.Series(data)
 
-        def output():
+        def nestedList():
             return [
                 ['Items', 'Gross Price', 'Final Price', 'Taxes Paid'],
                 ['Candy', 1.00, 1.13, 0.13],
@@ -118,9 +128,13 @@ class TestPandasDataStructureConverter(unittest.TestCase):
                 [3.00, 4.49, 5.02, 0.73]
             ]
 
-        result = DataConsolidator(dataFrame()).consolidate(series())
+        workbook = Workbook()
+        worksheetName = 'Sheet 1'
 
-        self.assertEqual(result, output())
+        workbookWithData = WorksheetDataDepositor(workbook, worksheetName).insert(dataFrame(), series())
+        dataInWorksheet = getSheetData(workbookWithData, worksheetName)
+
+        self.assertEqual(dataInWorksheet, nestedList())
 
 
 unittest.main(testRunner=ColourTextTestRunner())
