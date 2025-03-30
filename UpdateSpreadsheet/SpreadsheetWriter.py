@@ -1,3 +1,26 @@
+class WorksheetDataDepositor:
+    def __init__(self, workbook, worksheetName):
+        self.workbook = workbook
+        self.worksheetName = worksheetName
+
+    def insert(self, dataFrame, series):
+        nestedList = self.getNestedList(dataFrame, series)
+        dateWorksheet = self.ensureWorksheetExists(self.workbook)
+        return self.insertNestedListInWorkbook(dateWorksheet, nestedList)
+
+    def getNestedList(self, dataFrame, series):
+        return DataConsolidator(dataFrame).consolidate(series)
+
+    def ensureWorksheetExists(self, workbook):
+        try:
+            return workbook[self.worksheetName]
+        except:
+            return self.workbook.create_sheet(self.worksheetName)
+
+    def insertNestedListInWorkbook(self, dateWorksheet, nestedList):
+        for row in nestedList:
+            dateWorksheet.append(row)
+        return self.workbook
 
 
 class DataConsolidator:
