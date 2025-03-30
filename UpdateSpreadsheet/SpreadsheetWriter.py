@@ -32,18 +32,14 @@ class DataConsolidator:
 
         for key in nestedListComponents:
             rowValues = nestedListComponents[key]
-            if self.isAListOfLists(rowValues):
-                flattenListThenAddToNestedList(rowValues)
-            else:
+            if self.typeOfList(rowValues) == 'Single List':
                 addToNestedList(rowValues)
+            else:
+                flattenListThenAddToNestedList(rowValues)
 
         return finalNestedList
 
-    def isAListOfLists(self, inputList):
-        if not isinstance(inputList, list):
-            return False
-        
-        for element in inputList:
-            if not isinstance(element, list):
-                return False
-        return True
+    def typeOfList(self, inputList):
+        if isinstance(inputList[0], list):
+            return 'List of Lists'
+        return 'Single List'
