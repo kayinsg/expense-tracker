@@ -62,7 +62,7 @@ class SpreadsheetFileSystemTest(unittest.TestCase):
         self.assertEqual(spreadsheet['FilePath'], f"{parentDirectory}Week {weekWithinMonth}.xlsx")
 
 
-class SpreadsheetWorkbookPopulationTest(unittest.TestCase):
+class WorksheetPopulationTest(unittest.TestCase):
 
         @staticmethod
         def firstDayOfWeek(weekDays):
