@@ -1,23 +1,26 @@
-class WorksheetDataDepositor:
-    def __init__(self, workbook, worksheetName):
-        self.workbook = workbook
-        self.worksheetName = worksheetName
+import openpyxl
+import pandas
 
-    def insert(self, dataFrame, series):
-        nestedList = self.getNestedList(dataFrame, series)
+class WorksheetDataDepositor:
+    def __init__(self, workbook: openpyxl.Workbook, worksheetName: str):
+        self.workbook: openpyxl.Workbook = workbook
+        self.worksheetName: str = worksheetName
+
+    def insert(self, dataFrame: pandas.DataFrame, series: pandas.Series) -> list[list]:
+        nestedList: list[list] = self.getNestedList(dataFrame, series)
         dateWorksheet = self.ensureWorksheetExists(self.workbook)
         return self.insertNestedListInWorkbook(dateWorksheet, nestedList)
 
-    def getNestedList(self, dataFrame, series):
+    def getNestedList(self, dataFrame: pandas.DataFrame, series: pandas.Series) -> list[list]:
         return DataConsolidator(dataFrame).consolidate(series)
 
-    def ensureWorksheetExists(self, workbook):
+    def ensureWorksheetExists(self, workbook: openpyxl.Workbook) -> openpyxl.worksheet.worksheet.Worksheet:
         try:
             return workbook[self.worksheetName]
         except:
             return self.workbook.create_sheet(self.worksheetName)
 
-    def insertNestedListInWorkbook(self, dateWorksheet, nestedList):
+    def insertNestedListInWorkbook(self, dateWorksheet, nestedList: list[list]) -> openpyxl.Workbook:
         for row in nestedList:
             dateWorksheet.append(row)
         return self.workbook
