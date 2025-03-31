@@ -31,16 +31,12 @@ class DataConsolidator:
         self.dataFrame = dataFrame
 
     def consolidate(self, series):
-        dataFrameColumns = self.getDataFrameColumns(self.dataFrame)
-        dataFrameValues = self.getDataFrameRowValues(self.dataFrame)
-        seriesHeaders = self.getSeriesHeaders(series)
-        seriesData = self.getSeriesData(series, seriesHeaders)
         nestedListComponents = {
-            'Data Frame Columns': dataFrameColumns,
-            'Data Frame Values': dataFrameValues,
-            'Series Headers': seriesHeaders,
-            'Series Data': seriesData,
+            'Data Frame Columns': self.getDataFrameColumns(self.dataFrame),
+            'Data Frame Values': self.getDataFrameRowValues(self.dataFrame),
+            'Series Headers': self.getSeriesHeaders(series),
         }
+        nestedListComponents['Series Data'] = self.getSeriesData(series, nestedListComponents['Series Headers'])        
         return self.normalizeNestedList(nestedListComponents)
 
     def getDataFrameColumns(self, dataFrame):
