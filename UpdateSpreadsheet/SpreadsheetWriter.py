@@ -32,7 +32,12 @@ class DataConsolidator:
         dataFrameValues = self.getDataFrameRowValues(self.dataFrame)
         seriesHeaders = self.getSeriesHeaders(series)
         seriesData = self.getSeriesData(series, seriesHeaders)
-        nestedListComponents = {'Data Frame Columns': dataFrameColumns, 'Data Frame Values': dataFrameValues, 'Series Headers': seriesHeaders, 'Series Data': seriesData}
+        nestedListComponents = {
+            'Data Frame Columns': dataFrameColumns,
+            'Data Frame Values': dataFrameValues,
+            'Series Headers': seriesHeaders,
+            'Series Data': seriesData,
+        }
         return NestedListNormalizer(nestedListComponents).getFinalizeNestedList()
 
     def getDataFrameColumns(self, dataFrame):
