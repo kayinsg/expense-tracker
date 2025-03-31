@@ -6,7 +6,7 @@ class WorksheetDataDepositor:
         self.workbook: openpyxl.Workbook = workbook
         self.worksheetName: str = worksheetName
 
-    def insert(self, dataFrame: pandas.DataFrame, series: pandas.Series) -> list[list]:
+    def insert(self, dataFrame: pandas.DataFrame, series: pandas.Series) -> openpyxl.Workbook:
         nestedList: list[list] = self._getPandasData(dataFrame, series)
         dateWorksheet = self._ensureWorksheetExistsInWorkbook(self.workbook, self.worksheetName)
         self._insertConsolidatedPandasDataInWorksheet(dateWorksheet, nestedList)
@@ -15,13 +15,13 @@ class WorksheetDataDepositor:
     def _getPandasData(self, dataFrame: pandas.DataFrame, series: pandas.Series) -> list[list]:
         return DataConsolidator(dataFrame).consolidate(series)
 
-    def _ensureWorksheetExistsInWorkbook(self, workbook: openpyxl.Workbook, worksheetName) -> openpyxl.worksheet.worksheet.Worksheet:
+    def _ensureWorksheetExistsInWorkbook(self, workbook: openpyxl.Workbook, worksheetName: str) -> openpyxl.worksheet.worksheet.Worksheet:
         try:
             return workbook[worksheetName]
         except:
             return self.workbook.create_sheet(worksheetName)
 
-    def _insertConsolidatedPandasDataInWorksheet(self, dateWorksheet, nestedList: list[list]) -> openpyxl.Workbook:
+    def _insertConsolidatedPandasDataInWorksheet(self, dateWorksheet, nestedList: list[list]) -> None:
         for row in nestedList:
             dateWorksheet.append(row)
 
