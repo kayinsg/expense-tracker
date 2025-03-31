@@ -9,7 +9,8 @@ class WorksheetDataDepositor:
     def insert(self, dataFrame: pandas.DataFrame, series: pandas.Series) -> list[list]:
         nestedList: list[list] = self._getPandasData(dataFrame, series)
         dateWorksheet = self._ensureWorksheetExistsInWorkbook(self.workbook, self.worksheetName)
-        return self._insertConsolidatedPandasDataInWorksheet(dateWorksheet, nestedList)
+        self._insertConsolidatedPandasDataInWorksheet(dateWorksheet, nestedList)
+        return self.workbook
 
     def _getPandasData(self, dataFrame: pandas.DataFrame, series: pandas.Series) -> list[list]:
         return DataConsolidator(dataFrame).consolidate(series)
@@ -23,7 +24,6 @@ class WorksheetDataDepositor:
     def _insertConsolidatedPandasDataInWorksheet(self, dateWorksheet, nestedList: list[list]) -> openpyxl.Workbook:
         for row in nestedList:
             dateWorksheet.append(row)
-        return self.workbook
 
 
 class DataConsolidator:
