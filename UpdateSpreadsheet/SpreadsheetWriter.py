@@ -33,7 +33,7 @@ class DataConsolidator:
         seriesHeaders = self.getSeriesHeaders(series)
         seriesData = self.getSeriesData(series, seriesHeaders)
         nestedListComponents = {'Data Frame Columns': dataFrameColumns, 'Data Frame Values': dataFrameValues, 'Series Headers': seriesHeaders, 'Series Data': seriesData}
-        return self.finalizeNestedList(nestedListComponents)
+        return NestedListNormalizer(nestedListComponents).getFinalizeNestedList()
 
     def getDataFrameColumns(self, dataFrame):
         return list(map(lambda x: x, dataFrame.columns.tolist()))
@@ -47,8 +47,15 @@ class DataConsolidator:
     def getSeriesData(self, series, seriesHeaders):
         return list(map(lambda header: series.loc[header].tolist(), seriesHeaders))
 
-    def finalizeNestedList(self, nestedListComponents):
-        finalNestedList = [ ]
+
+class NestedListNormalizer:
+    def __init__(self, nestedListComponents: dict):
+        self.nestedListComponents = nestedListComponents
+        self.finalNestedList: list[list] = [ ]
+
+    def getFinalizeNestedList(self):
+        nestedListComponents = self.nestedListComponents
+        finalNestedList = self.finalNestedList
 
         addToNestedList = lambda rowValues: finalNestedList.append(rowValues)
         flattenListThenAddToNestedList = lambda rowValues: finalNestedList.extend(rowValues)
@@ -59,8 +66,7 @@ class DataConsolidator:
                 addToNestedList(rowValues)
             else:
                 flattenListThenAddToNestedList(rowValues)
-
-        return finalNestedList
+        return self.finalNestedList
 
     def typeOfList(self, inputList):
         if isinstance(inputList[0], list):
