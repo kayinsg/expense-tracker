@@ -38,7 +38,7 @@ class DataConsolidator:
             'Series Headers': seriesHeaders,
             'Series Data': seriesData,
         }
-        return NestedListNormalizer(nestedListComponents).getFinalizeNestedList()
+        return self.normalizeNestedList(nestedListComponents)
 
     def getDataFrameColumns(self, dataFrame):
         return list(map(lambda x: x, dataFrame.columns.tolist()))
@@ -51,6 +51,9 @@ class DataConsolidator:
 
     def getSeriesData(self, series, seriesHeaders):
         return list(map(lambda header: series.loc[header].tolist(), seriesHeaders))
+
+    def normalizeNestedList(self, nestedListComponents: dict) -> list[list]:
+        return NestedListNormalizer(nestedListComponents).getFinalizeNestedList()
 
 
 class NestedListNormalizer:
