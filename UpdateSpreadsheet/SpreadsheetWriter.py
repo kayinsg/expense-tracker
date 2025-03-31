@@ -71,9 +71,10 @@ class NestedListNormalizer:
         return self.finalNestedList
 
     def _addRowValuesToFinalNestedList(self, rowValues):
-        if self._typeOfListForPandasRowValues(rowValues) == 'Single List':
+        typeOfList = self._typeOfListForPandasRowValues(rowValues)
+        if typeOfList == 'Single List':
             self.finalNestedList.append(rowValues)
-        else:
+        elif typeOfList == 'List of Lists':
             self.finalNestedList.extend(rowValues)
 
     def _typeOfListForPandasRowValues(self, rowValues):
