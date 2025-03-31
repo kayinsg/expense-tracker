@@ -76,7 +76,7 @@ class NestedListNormalizer:
         else:
             self.finalNestedList.extend(rowValues)
 
-    def _typeOfListForPandasRowValues(self, inputList):
-        if isinstance(inputList[0], list):
+    def _typeOfListForPandasRowValues(self, rowValues):
+        if isinstance(rowValues[0], list):
             return 'List of Lists'
         return 'Single List'
