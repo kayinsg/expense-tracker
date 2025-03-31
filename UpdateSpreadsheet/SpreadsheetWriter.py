@@ -56,7 +56,7 @@ class DataConsolidator:
         return list(map(lambda header: series.loc[header].tolist(), seriesHeaders))
 
     def normalizeNestedList(self, nestedListComponents: dict) -> list[list]:
-        return NestedListNormalizer(nestedListComponents).getFinalizeNestedList()
+        return NestedListNormalizer(nestedListComponents).getFinalList()
 
 
 class NestedListNormalizer:
@@ -64,19 +64,19 @@ class NestedListNormalizer:
         self.nestedListComponents = nestedListComponents
         self.finalNestedList: list[list] = [ ]
 
-    def getFinalizeNestedList(self):
+    def getFinalList(self):
         for key in self.nestedListComponents:
             rowValues = self.nestedListComponents[key]
-            self.addToFinalNestedList(rowValues)
+            self._addRowValuesToFinalNestedList(rowValues)
         return self.finalNestedList
 
-    def addToFinalNestedList(self, rowValues):
-        if self.typeOfList(rowValues) == 'Single List':
+    def _addRowValuesToFinalNestedList(self, rowValues):
+        if self._typeOfListForPandasRowValues(rowValues) == 'Single List':
             self.finalNestedList.append(rowValues)
         else:
             self.finalNestedList.extend(rowValues)
 
-    def typeOfList(self, inputList):
+    def _typeOfListForPandasRowValues(self, inputList):
         if isinstance(inputList[0], list):
             return 'List of Lists'
         return 'Single List'
