@@ -62,19 +62,16 @@ class NestedListNormalizer:
         self.finalNestedList: list[list] = [ ]
 
     def getFinalizeNestedList(self):
-        nestedListComponents = self.nestedListComponents
-        finalNestedList = self.finalNestedList
-
-        addToNestedList = lambda rowValues: finalNestedList.append(rowValues)
-        flattenListThenAddToNestedList = lambda rowValues: finalNestedList.extend(rowValues)
-
-        for key in nestedListComponents:
-            rowValues = nestedListComponents[key]
-            if self.typeOfList(rowValues) == 'Single List':
-                addToNestedList(rowValues)
-            else:
-                flattenListThenAddToNestedList(rowValues)
+        for key in self.nestedListComponents:
+            rowValues = self.nestedListComponents[key]
+            self.addToFinalNestedList(rowValues)
         return self.finalNestedList
+
+    def addToFinalNestedList(self, rowValues):
+        if self.typeOfList(rowValues) == 'Single List':
+            self.finalNestedList.append(rowValues)
+        else:
+            self.finalNestedList.extend(rowValues)
 
     def typeOfList(self, inputList):
         if isinstance(inputList[0], list):
