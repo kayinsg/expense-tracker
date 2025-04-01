@@ -22,9 +22,7 @@ class Spreadsheet:
     def __init__(self, filePath: str):
         self.filePath = filePath
 
-    def apply(self, data: Data):
-        createdWorksheet = SpreadsheetCreator().apply(spreadsheetPath)
-        writtenWorksheet = SpreadsheetWriter(createdWorksheet, data).apply()
+    def apply(self):
         formattedWorksheet = SpreadsheetFormatter(writtenWorksheet).apply()
         formattedWorksheet.workbook.save(self.filePath)
         return formattedWorksheet
