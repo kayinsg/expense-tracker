@@ -8,25 +8,19 @@ class FileSystem:
     def __init__(self, spreadsheetParentDirectory):
         self.spreadsheetParentDirectory = spreadsheetParentDirectory
 
-    @staticmethod
-    def getCurrentDate():
-        return pendulum.now().format('YYYY-MM-DD')
-
-    def setUpSpreadsheet(self):
-        monthFolder = self.createSpreadsheetMonthFolder()
-        workbook = self.createSpreadsheetFile(monthFolder)
+    def setUpSpreadsheet(self, date):
+        monthFolder = self.createSpreadsheetMonthFolder(date)
+        workbook = self.createSpreadsheetFile(monthFolder, date)
         return workbook
 
-    def createSpreadsheetMonthFolder(self):
+    def createSpreadsheetMonthFolder(self, date):
         directoryCreator = DirectoryCreator(self.spreadsheetParentDirectory)
-        currentDate = self.getCurrentDate()
-        createdMonthDirectory = MonthDirectory(directoryCreator, currentDate).create()
+        createdMonthDirectory = MonthDirectory(directoryCreator, date).create()
         return createdMonthDirectory
 
-    def createSpreadsheetFile(self, parentDirectory):
-        currentDate = self.getCurrentDate()
+    def createSpreadsheetFile(self, parentDirectory, date):
         fileCreator = FileCreator(parentDirectory)
-        return SpreadsheetFileCreator(fileCreator, currentDate).create()
+        return SpreadsheetFileCreator(fileCreator, date).create()
 
 
 class FileSystemInterface(ABC):
