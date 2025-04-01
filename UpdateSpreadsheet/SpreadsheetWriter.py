@@ -49,7 +49,7 @@ class DataConsolidator:
         return list(map(lambda x: x, series.index.tolist()))
 
     def getSeriesRowValues(self, series, seriesHeaders):
-        return list(map(lambda header: series.loc[header].tolist(), seriesHeaders))
+        return list(map(lambda header: series.loc[header], seriesHeaders))
 
     def normalizeNestedList(self, nestedListComponents: dict) -> list[list]:
         return NestedListNormalizer(nestedListComponents).getFinalList()
