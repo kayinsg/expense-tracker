@@ -8,7 +8,8 @@ class WorkbookPopulator:
     def populate(self, workbook):
         cleanedWorkbook = self.removeDefaultWorksheet(workbook)
         daysWithinWeek = self.getDaysWithinTheWeekOfCurrentDate(self.currentDate)
-        return self.insertDateWorksheetsInWorkbook(cleanedWorkbook, daysWithinWeek)
+        workbookWithDateWorksheets = self.insertDateWorksheetsInWorkbook(cleanedWorkbook, daysWithinWeek)
+        return workbookWithDateWorksheets
 
     def removeDefaultWorksheet(self, workbook):
         return DefaultWorksheetEraser(workbook).getCleanWorkbook()
