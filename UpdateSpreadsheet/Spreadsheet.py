@@ -39,58 +39,6 @@ class SpreadsheetInterface(ABC):
         )
 
 
-class SpreadsheetWriter(SpreadsheetInterface):
-    def __init__(
-        self,
-        spreadsheetDetails: SpreadsheetDetails,
-        data: Data
-    ):
-        self.spreadsheetDetails = spreadsheetDetails
-        self.worksheet = spreadsheetDetails.worksheet
-        self.data = data
-
-    def apply(self) -> SpreadsheetDetails:
-        workbook = self.spreadsheetDetails.workbook
-        spreadSheetFile = self.spreadsheetDetails.filePath
-
-        self._writeTabularDataToWorksheet(self.data.table)
-        self.writeSummaryToWorksheet(self.data.summary)
-
-
-        return SpreadsheetDetails(
-            spreadSheetFile,
-            workbook,
-            self.spreadsheetDetails.worksheet
-        )
-
-    def _writeTabularDataToWorksheet(self, table: DataFrame) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
-        workbook = self.spreadsheetDetails.workbook
-
-        workbook.active = worksheet
-        for row in dataframe_to_rows(
-            table,
-            index=False,
-            header=True
-        ):
-
-            worksheet.append(row)
-
-    def writeSummaryToWorksheet(self, series: Series) -> None:
-        summaryHeaders = list()
-        summaryValues = list()
-
-        indices = series.index.tolist()
-
-        for index in indices:
-            summaryHeaders.append(index)
-            valueForSummary = series[index]
-            summaryValues.append(valueForSummary)
-
-        self.spreadsheetDetails.worksheet.append(summaryHeaders)
-        self.spreadsheetDetails.worksheet.append(summaryValues)
-
-
 class SpreadsheetFormatter(SpreadsheetInterface):
     def __init__(
         self,
