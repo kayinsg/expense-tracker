@@ -19,7 +19,7 @@ class FontFormatter:
         BodyFormatter(self.worksheet, headerRowNumbers).changeFont(FontProfile)
 
     def getRowNumbers(self, rowType):
-        return RowIdentifier(self.worksheet).fetchRowNumbers(rowType)
+        return TypeOfRowIdentifier(self.worksheet).fetchRowNumbers(rowType)
 
 
 class FontFormatterInterface(ABC):
@@ -78,47 +78,39 @@ class BodyFormatter(FontFormatterInterface):
                 )
 
 
-class RowIdentifier:
+class TypeOfRowIdentifier:
     def __init__(self, worksheet):
-        self.worksheet = worksheet
+        self.rows = self.getSheetData(worksheet)
 
-    def fetchRowNumbers(self, rowType) -> list[int]:
-        rowNumbers = {
-                "header": self.classifyRows()['Header Row Numbers'],
-                "body": self.classifyRows()['Body Row Numbers']
-        }
-        return rowNumbers[rowType]
+    @staticmethod
+    def getSheetData(worksheet):
+        data = []
+        for row in worksheet.iter_rows(values_only=True):
+            data.append(list(row))
+        return data
 
-    def classifyRows(self) -> dict[str, list[int]]:
-        rowDetails = defaultdict(list)
-        for row in self.worksheet.iter_rows():
-            cellValues = list()
+    def fetchRowNumbers(self, rowType):
+        if rowType == "headers":
+            return self.getHeaderRowNumbers()
+        elif rowType == "body":
+            return self.getBodyRowNumbers() 
 
-            for cell in row:
-                cellValues.append(cell.value)
-            if self.rowComprisesHeader(cellValues):
-                for cell in row:
-                    rowDetails['Header Row Numbers'].append(cell.row)
-                    break
-            else:
-                for cell in row:
-                    rowDetails['Body Row Numbers'].append(cell.row)
-                    break
+    def getHeaderRowNumbers(self):
+        headerRowNumbers = [ ]
+        for index, row in enumerate(self.rows, start=1):
+            if self.typeOfRow(row) == "Header":
+                headerRowNumbers.append(index)
+        return headerRowNumbers
 
-        return rowDetails
+    def getBodyRowNumbers(self):
+        bodyRowNumbers = [ ]
+        for index, row in enumerate(self.rows, start=1):
+            if self.typeOfRow(row) == "Body":
+                bodyRowNumbers.append(index)
+        return bodyRowNumbers
 
-    def rowComprisesHeader(self, rowValues) -> bool:
-
-        headerPattern = regex.compile(r'\w')
-        checkedValues = list()
-
-        for element in rowValues:
-            if headerPattern.match(element):
-                checkedValues.append(True)
-            else:
-                checkedValues.append(False)
-
-        if all(checkedValues):
-            return True
-
-        return False
+    def typeOfRow(self, row):
+        for item in row:
+            if '$' in str(item):
+                return 'Body'
+        return 'Header'
