@@ -12,10 +12,15 @@ class FontFormatter:
         self.filePath = spreadsheetDetails.filePath
 
     def changeHeaderFont(self, FontProfile) -> None:
-        HeaderFormatter(self.worksheet).changeFont(FontProfile)
+        headerRowNumbers = self.getRowNumbers('header')
+        HeaderFormatter(self.worksheet, headerRowNumbers).changeFont(FontProfile)
 
     def changeBodyFont(self, FontProfile) -> None:
-        BodyFormatter(self.worksheet).changeFont(FontProfile)
+        headerRowNumbers = self.getRowNumbers('body')
+        BodyFormatter(self.worksheet, headerRowNumbers).changeFont(FontProfile)
+
+    def getRowNumbers(self, rowType):
+        return RowIdentifier(self.worksheet).fetchRowNumbers(rowType)
 
     def saveWorkbook(self) -> None:
         self.workbook.save(self.filePath)
@@ -34,12 +39,12 @@ class HeaderFormatter(FontFormatterInterface):
     def __init__(
         self,
         worksheet,
+        headerRowNumbers
     ):
         self.worksheet = worksheet
-        self.headerRowNumbers = RowIdentifier(worksheet).fetchRowNumbers("header")
+        self.headerRowNumbers = headerRowNumbers
 
     def changeFont(self, FontProfile) -> None:
-
         worksheet = self.worksheet
         lastColumnContainingData = worksheet.max_column + 1
         for headerRow in self.headerRowNumbers:
@@ -54,9 +59,9 @@ class HeaderFormatter(FontFormatterInterface):
 
 
 class BodyFormatter(FontFormatterInterface):
-    def __init__(self, worksheet):
+    def __init__(self, worksheet, bodyRowNumbers):
         self.worksheet = worksheet
-        self.bodyRowNumbers = RowIdentifier(worksheet).fetchRowNumbers("body")
+        self.bodyRowNumbers = bodyRowNumbers
 
     def changeFont(self, FontProfile) -> None:
         worksheet = self.worksheet
