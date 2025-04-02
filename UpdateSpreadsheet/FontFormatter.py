@@ -9,7 +9,6 @@ class FontFormatter:
     def __init__(self, spreadsheetDetails):
         self.worksheet = spreadsheetDetails.worksheet
         self.workbook = spreadsheetDetails.workbook
-        self.filePath = spreadsheetDetails.filePath
 
     def changeHeaderFont(self, FontProfile) -> None:
         headerRowNumbers = self.getRowNumbers('header')
@@ -21,9 +20,6 @@ class FontFormatter:
 
     def getRowNumbers(self, rowType):
         return RowIdentifier(self.worksheet).fetchRowNumbers(rowType)
-
-    def saveWorkbook(self) -> None:
-        self.workbook.save(self.filePath)
 
 
 class FontFormatterInterface(ABC):
