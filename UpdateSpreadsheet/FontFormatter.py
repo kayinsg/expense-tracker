@@ -39,11 +39,7 @@ class FontFormatterInterface(ABC):
 
 
 class HeaderFormatter(FontFormatterInterface):
-    def __init__(
-        self,
-        worksheet,
-        headerRowNumbers
-    ):
+    def __init__(self, worksheet, headerRowNumbers):
         self.worksheet = worksheet
         self.headerRowNumbers = headerRowNumbers
         self.lastColumnContainingData = worksheet.max_column + 1
