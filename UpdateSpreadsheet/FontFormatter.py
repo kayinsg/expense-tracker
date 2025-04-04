@@ -45,25 +45,7 @@ class HeaderFormatter(FontFormatterInterface):
         for headerRow in self.headerRowNumbers:
             for columnNumber in self.getColumnNumbersThatContainData(self.worksheet):
                 cellCoordinates = {'rowNumber':headerRow, 'columnNumber': columnNumber}
-                self.changeHeaderRows(FontProfile, cellCoordinates)
-
-    def changeHeaderRows(self, FontProfile, cellCoordinates):
-        cellObject = self.getCellObject(cellCoordinates) 
-        self.changeCellFontProperties(FontProfile, cellObject)
-
-    def getCellObject(self, cellCoordinates):
-        headerCell = self.worksheet.cell(
-            row=cellCoordinates['rowNumber'],
-            column=cellCoordinates['columnNumber']
-        )
-        return headerCell
-
-    def changeCellFontProperties(self, FontProfile, headerCell):
-        headerCell.font = Font(
-            name=FontProfile.name,
-            size=FontProfile.size,
-            bold=FontProfile.boldToggle
-        )
+                SpreadsheetFontChanger(self.worksheet, FontProfile).change(cellCoordinates)
 
 
 class BodyFormatter(FontFormatterInterface):
@@ -76,13 +58,19 @@ class BodyFormatter(FontFormatterInterface):
         for bodyRow in self.bodyRowNumbers:
             for columnNumber in self.getColumnNumbersThatContainData(self.worksheet):
                 cellCoordinates = {'rowNumber':bodyRow, 'columnNumber': columnNumber}
-                self.changeBodyRows(FontProfile, cellCoordinates)
+                SpreadsheetFontChanger(self.worksheet, FontProfile).change(cellCoordinates)
 
-    def changeBodyRows(self, FontProfile, cellCoordinates):
-        cellObject = self.getCellObject(cellCoordinates)
-        self.changeCellFontProperties(FontProfile, cellObject)
 
-    def getCellObject(self, cellCoordinates):
+class SpreadsheetFontChanger:
+    def __init__(self, worksheet, fontProfile):
+        self.worksheet = worksheet
+        self.fontProfile = fontProfile
+
+    def change(self, cellCoordinates):
+        cellObject = self.getCellInstance(cellCoordinates)
+        self.changeCellFontProperties(self.fontProfile, cellObject)
+
+    def getCellInstance(self, cellCoordinates):
         bodyCell = self.worksheet.cell(
             row=cellCoordinates['rowNumber'],
             column=cellCoordinates['columnNumber']
