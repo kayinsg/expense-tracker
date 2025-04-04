@@ -39,7 +39,6 @@ class HeaderFormatter(FontFormatterInterface):
     def __init__(self, worksheet, headerRowNumbers):
         self.worksheet = worksheet
         self.headerRowNumbers = headerRowNumbers
-        self.lastColumnContainingData = worksheet.max_column + 1
 
     def changeFont(self, FontProfile) -> None:
         for headerRow in self.headerRowNumbers:
@@ -55,7 +54,6 @@ class BodyFormatter(FontFormatterInterface):
     def __init__(self, worksheet, bodyRowNumbers):
         self.worksheet = worksheet
         self.bodyRowNumbers = bodyRowNumbers
-        self.lastColumnContainingData = worksheet.max_column + 1
 
     def changeFont(self, FontProfile) -> None:
         for bodyRow in self.bodyRowNumbers:
