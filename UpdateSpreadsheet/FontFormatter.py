@@ -80,31 +80,31 @@ class BodyFormatter(FontFormatterInterface):
 
 class TypeOfRowIdentifier:
     def __init__(self, worksheet):
-        self.rows = self.getSheetData(worksheet)
+        self.worksheet = worksheet
 
-    @staticmethod
-    def getSheetData(worksheet):
+    def fetchRowNumbers(self, rowType):
+        worksheetData = self.getSheetData(self.worksheet)
+        if rowType == "headers":
+            return self.getHeaderRowNumbers(worksheetData)
+        elif rowType == "body":
+            return self.getBodyRowNumbers(worksheetData)
+
+    def getSheetData(self, worksheet):
         data = []
         for row in worksheet.iter_rows(values_only=True):
             data.append(list(row))
         return data
 
-    def fetchRowNumbers(self, rowType):
-        if rowType == "headers":
-            return self.getHeaderRowNumbers()
-        elif rowType == "body":
-            return self.getBodyRowNumbers() 
-
-    def getHeaderRowNumbers(self):
+    def getHeaderRowNumbers(self, worksheetDataRows):
         headerRowNumbers = [ ]
-        for index, row in enumerate(self.rows, start=1):
+        for index, row in enumerate(worksheetDataRows, start=1):
             if self.typeOfRow(row) == "Header":
                 headerRowNumbers.append(index)
         return headerRowNumbers
 
-    def getBodyRowNumbers(self):
+    def getBodyRowNumbers(self, worksheetDataRows):
         bodyRowNumbers = [ ]
-        for index, row in enumerate(self.rows, start=1):
+        for index, row in enumerate(worksheetDataRows, start=1):
             if self.typeOfRow(row) == "Body":
                 bodyRowNumbers.append(index)
         return bodyRowNumbers
