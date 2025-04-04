@@ -58,14 +58,14 @@ class BodyFormatter(FontFormatterInterface):
     def __init__(self, worksheet, bodyRowNumbers):
         self.worksheet = worksheet
         self.bodyRowNumbers = bodyRowNumbers
+        self.lastColumnContainingData = worksheet.max_column + 1
 
     def changeFont(self, FontProfile) -> None:
         worksheet = self.worksheet
-        lastColumnContainingData = worksheet.max_column + 1
         for bodyRow in self.bodyRowNumbers:
             for columnNumber in range(
                 1,
-                lastColumnContainingData
+                self.lastColumnContainingData
             ):
                 headerCell = worksheet.cell(
                     row=bodyRow,
