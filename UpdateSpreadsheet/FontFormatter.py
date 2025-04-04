@@ -46,19 +46,31 @@ class HeaderFormatter(FontFormatterInterface):
     ):
         self.worksheet = worksheet
         self.headerRowNumbers = headerRowNumbers
+        self.lastColumnContainingData = worksheet.max_column + 1
 
     def changeFont(self, FontProfile) -> None:
-        worksheet = self.worksheet
-        lastColumnContainingData = worksheet.max_column + 1
         for headerRow in self.headerRowNumbers:
-            for columnNumber in range(1, lastColumnContainingData):
+            for columnNumber in self.getColumnNumbersThatContainData(self.worksheet):
+                cellCoordinates = {'rowNumber':headerRow, 'columnNumber': columnNumber}
+                self.changeHeaderRows(FontProfile, cellCoordinates)
 
-                headerCell = worksheet.cell(row=headerRow, column=columnNumber)
-                headerCell.font = Font(
-                    name=FontProfile.name,
-                    size=FontProfile.size,
-                    bold=FontProfile.boldToggle
-                )
+    def changeHeaderRows(self, FontProfile, cellCoordinates):
+        cellObject = self.getCellObject(cellCoordinates) 
+        self.changeCellFontProperties(FontProfile, cellObject)
+
+    def getCellObject(self, cellCoordinates):
+        headerCell = self.worksheet.cell(
+            row=cellCoordinates['rowNumber'],
+            column=cellCoordinates['columnNumber']
+        )
+        return headerCell
+
+    def changeCellFontProperties(self, FontProfile, headerCell):
+        headerCell.font = Font(
+            name=FontProfile.name,
+            size=FontProfile.size,
+            bold=FontProfile.boldToggle
+        )
 
 
 class BodyFormatter(FontFormatterInterface):
