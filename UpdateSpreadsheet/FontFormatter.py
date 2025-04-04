@@ -1,8 +1,5 @@
 from abc import ABC, abstractmethod
-import re as regex
-
 from openpyxl.styles import Font
-from collections import defaultdict
 
 
 class FontFormatter:
