@@ -30,6 +30,13 @@ class FontFormatterInterface(ABC):
             'Desist from trying to instantiate'
         )
 
+    def getColumnNumbersThatContainData(self, worksheet):
+        lastNonEmptyColumnAccountedForRange = worksheet.lastColumnContainingData + 1
+        columnNumbers = [ ]
+        for columnNumber in range(1, lastNonEmptyColumnAccountedForRange):
+            columnNumbers.append(columnNumber)
+        return columnNumbers
+
 
 class HeaderFormatter(FontFormatterInterface):
     def __init__(
