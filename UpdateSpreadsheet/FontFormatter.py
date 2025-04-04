@@ -68,21 +68,28 @@ class BodyFormatter(FontFormatterInterface):
         self.lastColumnContainingData = worksheet.max_column + 1
 
     def changeFont(self, FontProfile) -> None:
-        worksheet = self.worksheet
         for bodyRow in self.bodyRowNumbers:
-            for columnNumber in range(
-                1,
-                self.lastColumnContainingData
-            ):
-                headerCell = worksheet.cell(
-                    row=bodyRow,
-                    column=columnNumber
-                )
-                headerCell.font = Font(
-                    name=FontProfile.name,
-                    size=FontProfile.size,
-                    bold=FontProfile.boldToggle
-                )
+            for columnNumber in self.getColumnNumbersThatContainData(self.worksheet):
+                cellCoordinates = {'rowNumber':bodyRow, 'columnNumber': columnNumber}
+                self.changeBodyRows(FontProfile, cellCoordinates)
+
+    def changeBodyRows(self, FontProfile, cellCoordinates):
+        cellObject = self.getCellObject(cellCoordinates)
+        self.changeCellFontProperties(FontProfile, cellObject)
+
+    def getCellObject(self, cellCoordinates):
+        bodyCell = self.worksheet.cell(
+            row=cellCoordinates['rowNumber'],
+            column=cellCoordinates['columnNumber']
+        )
+        return bodyCell
+
+    def changeCellFontProperties(self, FontProfile, bodyCell):
+        bodyCell.font = Font(
+            name=FontProfile.name,
+            size=FontProfile.size,
+            bold=FontProfile.boldToggle
+        )
 
 
 class TypeOfRowIdentifier:
