@@ -18,26 +18,7 @@ from GlobalDataObjects import Data
 from UpdateSpreadsheet.dataTypes import ExcelWorkbook, ExcelWorksheet
 
 
-class Spreadsheet:
-    def __init__(self, filePath: str):
-        self.filePath = filePath
-
-    def apply(self):
-        formattedWorksheet = SpreadsheetFormatter(writtenWorksheet).apply()
-        formattedWorksheet.workbook.save(self.filePath)
-        return formattedWorksheet
-
-
-class SpreadsheetInterface(ABC):
-    @abstractmethod
-    def apply(self) -> SpreadsheetDetails:
-        raise NotImplementedError(
-            'This is an abstract class.'
-            'Desist from trying to instantiate'
-        )
-
-
-class SpreadsheetFormatter(SpreadsheetInterface):
+class SpreadsheetFormatter:
     def __init__(self, worksheet):
         self.worksheet = worksheet
         self.dataRows = worksheet.max_row
