@@ -27,7 +27,7 @@ class FontFormatterInterface(ABC):
         )
 
     def getColumnNumbersThatContainData(self, worksheet):
-        lastNonEmptyColumnAccountedForRange = worksheet.lastColumnContainingData + 1
+        lastNonEmptyColumnAccountedForRange = worksheet.max_column + 1
         columnNumbers = [ ]
         for columnNumber in range(1, lastNonEmptyColumnAccountedForRange):
             columnNumbers.append(columnNumber)
