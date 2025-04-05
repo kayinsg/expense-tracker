@@ -43,10 +43,10 @@ class HeaderFormatter(FontFormatterInterface):
         for headerRow in self.headerRowNumbers:
             for columnNumber in self.getColumnNumbersThatContainData(self.worksheet):
                 cellCoordinates = {'rowNumber':headerRow, 'columnNumber': columnNumber}
-                self.changeHeaderRowFont(FontProfile, cellCoordinates)
+                self.changeHeaderSpreadsheetCells(FontProfile, cellCoordinates)
 
-    def changeHeaderRowFont(self, fontProfile, cellCoordinates):
-        SpreadsheetFontChanger(self.worksheet, fontProfile).change(cellCoordinates)
+    def changeHeaderSpreadsheetCells(self, fontProfile, cellCoordinates):
+        CellFontChanger(self.worksheet, fontProfile).change(cellCoordinates)
 
 
 class BodyFormatter(FontFormatterInterface):
@@ -58,13 +58,13 @@ class BodyFormatter(FontFormatterInterface):
         for bodyRow in self.bodyRowNumbers:
             for columnNumber in self.getColumnNumbersThatContainData(self.worksheet):
                 cellCoordinates = {'rowNumber':bodyRow, 'columnNumber': columnNumber}
-                self.changeBodyRowFont(FontProfile, cellCoordinates)
+                self.changeBodySpreadsheetCells(FontProfile, cellCoordinates)
 
-    def changeBodyRowFont(self, fontProfile, cellCoordinates):
-        SpreadsheetFontChanger(self.worksheet, fontProfile).change(cellCoordinates)
+    def changeBodySpreadsheetCells(self, fontProfile, cellCoordinates):
+        CellFontChanger(self.worksheet, fontProfile).change(cellCoordinates)
 
 
-class SpreadsheetFontChanger:
+class CellFontChanger:
     def __init__(self, worksheet, fontProfile):
         self.worksheet = worksheet
         self.fontProfile = fontProfile
