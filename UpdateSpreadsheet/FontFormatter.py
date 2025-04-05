@@ -94,7 +94,7 @@ class TypeOfRowIdentifier:
 
     def fetchRowNumbers(self, rowType):
         worksheetData = self.getSheetData(self.worksheet)
-        if rowType == "headers":
+        if rowType == "header":
             return self.getHeaderRowNumbers(worksheetData)
         elif rowType == "body":
             return self.getBodyRowNumbers(worksheetData)
