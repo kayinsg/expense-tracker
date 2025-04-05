@@ -28,10 +28,7 @@ class FontFormatterInterface(ABC):
 
     def getColumnNumbersThatContainData(self, worksheet):
         lastNonEmptyColumnAccountedForRange = worksheet.max_column + 1
-        columnNumbers = [ ]
-        for columnNumber in range(1, lastNonEmptyColumnAccountedForRange):
-            columnNumbers.append(columnNumber)
-        return columnNumbers
+        return list(map(lambda columnNumber: columnNumber, range(1, lastNonEmptyColumnAccountedForRange)))
 
 
 class HeaderFormatter(FontFormatterInterface):
@@ -100,10 +97,10 @@ class TypeOfRowIdentifier:
             return self.getBodyRowNumbers(worksheetData)
 
     def getSheetData(self, worksheet):
-        data = []
-        for row in worksheet.iter_rows(values_only=True):
-            data.append(list(row))
-        return data
+        return list(map(
+            lambda rowInSpreadsheet: rowInSpreadsheet,
+            worksheet.iter_rows(values_only=True)
+        ))
 
     def getHeaderRowNumbers(self, worksheetDataRows):
         headerRowNumbers = [ ]
