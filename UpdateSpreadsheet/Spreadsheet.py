@@ -80,13 +80,11 @@ class SpreadsheetFormatter(SpreadsheetInterface):
 
     def padRowHeight(self) -> None:
         idealRowHeight = 27
-
         for row in range(1, self.dataRows + 1):
             self.worksheet.row_dimensions[row].height = idealRowHeight
 
     def alignCellsBottomLeft(self) -> None:
         lastDataColumnAccountedForRange = self.worksheet.max_column
-
         for row in self.worksheet.iter_rows(
                 max_row=self.dataRows,
                 max_col=lastDataColumnAccountedForRange
