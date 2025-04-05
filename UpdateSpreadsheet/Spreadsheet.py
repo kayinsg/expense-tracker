@@ -55,8 +55,7 @@ class SpreadsheetFormatter(SpreadsheetInterface):
             18,
             boldToggle = True
         )
-        fontFormatter = FontFormatter(self.worksheet)
-        fontFormatter.changeHeaderFont(headerFontProfile)
+        FontFormatter(self.worksheet).changeHeaderFont(headerFontProfile)
 
     def changeBodyFont(self) -> None:
         bodyFontProfile = FontProfile(
@@ -64,8 +63,7 @@ class SpreadsheetFormatter(SpreadsheetInterface):
             12.8,
             boldToggle = False
         )
-        fontFormatter = FontFormatter(self.worksheet)
-        fontFormatter.changeBodyFont(bodyFontProfile)
+        FontFormatter(self.worksheet).changeBodyFont(bodyFontProfile)
 
     def adjustWidthOfColumnsToFit(self) -> None:
         for column in self.worksheet.iter_cols():
