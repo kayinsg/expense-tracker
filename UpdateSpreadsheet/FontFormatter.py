@@ -3,9 +3,8 @@ from openpyxl.styles import Font
 
 
 class FontFormatter:
-    def __init__(self, spreadsheetDetails):
-        self.worksheet = spreadsheetDetails.worksheet
-        self.workbook = spreadsheetDetails.workbook
+    def __init__(self,worksheet):
+        self.worksheet = worksheet
 
     def changeHeaderFont(self, FontProfile) -> None:
         headerRowNumbers = self.getRowNumbers('header')

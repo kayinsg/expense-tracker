@@ -38,29 +38,16 @@ class SpreadsheetInterface(ABC):
 
 
 class SpreadsheetFormatter(SpreadsheetInterface):
-    def __init__(
-        self,
-        spreadsheetDetails : SpreadsheetDetails,
-    ):
+    def __init__(self, worksheet):
+        self.worksheet = worksheet
+        self.dataRows = worksheet.max_row
 
-        self.spreadsheetDetails = spreadsheetDetails
-        self.dataRows = self.spreadsheetDetails.worksheet.max_row
-
-    def apply(self) -> SpreadsheetDetails:
-        workbook = self.spreadsheetDetails.workbook
-        filePath = self.spreadsheetDetails.filePath
-
+    def apply(self):
         self.changeHeaderFont()
         self.changeBodyFont()
         self.adjustWidthOfColumnsToFit()
         self.padRowHeight()
         self.alignCellsBottomLeft()
-
-        return SpreadsheetDetails(
-            filePath,
-            workbook,
-            self.spreadsheetDetails.worksheet,
-        )
 
     def changeHeaderFont(self) -> None:
         headerFontProfile = FontProfile(
@@ -68,7 +55,7 @@ class SpreadsheetFormatter(SpreadsheetInterface):
             18,
             boldToggle = True
         )
-        fontFormatter = FontFormatter(self.spreadsheetDetails)
+        fontFormatter = FontFormatter(self.worksheet)
         fontFormatter.changeHeaderFont(headerFontProfile)
 
     def changeBodyFont(self) -> None:
@@ -77,13 +64,11 @@ class SpreadsheetFormatter(SpreadsheetInterface):
             12.8,
             boldToggle = False
         )
-        fontFormatter = FontFormatter(self.spreadsheetDetails)
+        fontFormatter = FontFormatter(self.worksheet)
         fontFormatter.changeBodyFont(bodyFontProfile)
 
     def adjustWidthOfColumnsToFit(self) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
-
-        for column in worksheet.iter_cols():
+        for column in self.worksheet.iter_cols():
             currentColumnIndex = ""
             maxLengthOfCellInColumn = 0
 
@@ -93,22 +78,20 @@ class SpreadsheetFormatter(SpreadsheetInterface):
                 if lengthOfCellValue > maxLengthOfCellInColumn:
                     maxLengthOfCellInColumn = lengthOfCellValue
 
-            worksheet.column_dimensions[currentColumnIndex].width = maxLengthOfCellInColumn + 8
+            self.worksheet.column_dimensions[currentColumnIndex].width = maxLengthOfCellInColumn + 8
 
     def padRowHeight(self) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
         idealRowHeight = 27
 
-        dataRows = worksheet.max_row + 1
+        dataRows = self.worksheet.max_row + 1
 
         for row in range(1, dataRows):
-            worksheet.row_dimensions[row].height = idealRowHeight
+            self.worksheet.row_dimensions[row].height = idealRowHeight
 
     def alignCellsBottomLeft(self) -> None:
-        worksheet = self.spreadsheetDetails.worksheet
-        lastDataColumnAccountedForRange = worksheet.max_column
+        lastDataColumnAccountedForRange = self.worksheet.max_column
 
-        for row in worksheet.iter_rows(
+        for row in self.worksheet.iter_rows(
                 max_row=self.dataRows,
                 max_col=lastDataColumnAccountedForRange
         ):
