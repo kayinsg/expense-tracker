@@ -90,13 +90,13 @@ class TypeOfRowIdentifier:
         self.worksheet = worksheet
 
     def fetchRowNumbers(self, rowType):
-        worksheetData = self.getSheetData(self.worksheet)
+        worksheetData = self.getRowsInWorksheet(self.worksheet)
         if rowType == "header":
             return self.getHeaderRowNumbers(worksheetData)
         elif rowType == "body":
             return self.getBodyRowNumbers(worksheetData)
 
-    def getSheetData(self, worksheet):
+    def getRowsInWorksheet(self, worksheet):
         return list(map(
             lambda rowInSpreadsheet: rowInSpreadsheet,
             worksheet.iter_rows(values_only=True)
