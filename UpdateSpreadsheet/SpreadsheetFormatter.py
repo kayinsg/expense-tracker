@@ -52,10 +52,9 @@ class SpreadsheetFormatter:
             self.worksheet.row_dimensions[row].height = idealRowHeight
 
     def alignCellsBottomLeft(self) -> None:
-        lastDataColumnAccountedForRange = self.worksheet.max_column
         for row in self.worksheet.iter_rows(
                 max_row=self.dataRows,
-                max_col=lastDataColumnAccountedForRange
+                max_col=self.worksheet.max_column
         ):
             for cell in row:
                 cell.alignment = Alignment(
