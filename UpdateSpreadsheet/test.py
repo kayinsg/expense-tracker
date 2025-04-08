@@ -1,11 +1,9 @@
 import unittest
 from openpyxl import Workbook
 from FileSystem import MonthDirectory, DirectoryCreator, SpreadsheetFileCreator, FileCreator
-from WorkbookPopulator import WeekNormalizer
+from WorkbookPopulator import WorkbookPopulator
 import pendulum
-import openpyxl
 from colour_runner.runner import ColourTextTestRunner
-import openpyxl
 import pandas
 from SpreadsheetWriter import WorksheetDataDepositor
 
