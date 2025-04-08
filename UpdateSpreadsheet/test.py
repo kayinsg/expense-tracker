@@ -69,29 +69,36 @@ class WorksheetPopulationTest(unittest.TestCase):
         def lastDayOfWeek(weekDays):
             return weekDays[-1].format('dddd')
 
+        @staticmethod
+        def getWorkbook():
+            return Workbook()
+
         def testShouldAccountForDaysOfWeekGivenDaysFromPreviousMonth(self):
             dateWithPreviousMonthWeekdays = '2025-03-01'
             weekDaysInvolvingThePreviousMonth = ['Feb.23.2025', 'Feb.24.2025', 'Feb.25.2025', 'Feb.26.2025', 'Feb.27.2025', 'Feb.28.2025', 'Mar.01.2025']
+            workbook = self.getWorkbook()
 
-            weekDaysStartingFromSunday = WeekNormalizer(dateWithPreviousMonthWeekdays).getWeekdays()
+            workbookWithDateWorksheets = WorkbookPopulator(dateWithPreviousMonthWeekdays).populate(workbook)
 
-            self.assertEqual(weekDaysStartingFromSunday, weekDaysInvolvingThePreviousMonth)
+            self.assertEqual(workbookWithDateWorksheets.sheetnames, weekDaysInvolvingThePreviousMonth)
 
         def testShouldAccountForDaysOfWeekGivenDaysFromTheSameMonth(self):
             dateWithSameMonthWeekdays = '2025-03-27'
             weekDaysInvolvingOnlyTheSameMonth = ['Mar.23.2025', 'Mar.24.2025', 'Mar.25.2025', 'Mar.26.2025', 'Mar.27.2025', 'Mar.28.2025', 'Mar.29.2025']
+            workbook = self.getWorkbook()
 
-            weekDaysStartingFromSunday = WeekNormalizer(dateWithSameMonthWeekdays).getWeekdays()
+            workbookWithDateWorksheets = WorkbookPopulator(dateWithSameMonthWeekdays).populate(workbook)
 
-            self.assertEqual(weekDaysStartingFromSunday, weekDaysInvolvingOnlyTheSameMonth)
+            self.assertEqual(workbookWithDateWorksheets.sheetnames, weekDaysInvolvingOnlyTheSameMonth)
 
         def testShouldAccountForDaysOfWeekGivenDaysFromSucceedingMonth(self):
             dateWithSuceedingMonthWeekdays = '2025-04-05'
             weekDaysInvolvingTheSucceedingMonth = ['Mar.30.2025', 'Mar.31.2025', 'Apr.01.2025', 'Apr.02.2025', 'Apr.03.2025', 'Apr.04.2025', 'Apr.05.2025']
+            workbook = self.getWorkbook()
 
-            weekDaysStartingFromSunday = WeekNormalizer(dateWithSuceedingMonthWeekdays).getWeekdays()
+            workbookWithDateWorksheets = WorkbookPopulator(dateWithSuceedingMonthWeekdays).populate(workbook)
 
-            self.assertEqual(weekDaysStartingFromSunday,weekDaysInvolvingTheSucceedingMonth)
+            self.assertEqual(workbookWithDateWorksheets.sheetnames, weekDaysInvolvingTheSucceedingMonth)
 
 
 class InsertionOfDataInSpreadsheetTest(unittest.TestCase):
