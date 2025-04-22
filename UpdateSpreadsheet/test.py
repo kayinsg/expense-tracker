@@ -5,7 +5,7 @@ from WorkbookPopulator import WorkbookPopulator
 import pendulum
 from colour_runner.runner import ColourTextTestRunner
 import pandas
-from SpreadsheetWriter import WorksheetDataDepositor
+from WorksheetWriter import WorksheetDataDepositor
 
 
 class SpreadsheetFileSystemTest(unittest.TestCase):
@@ -144,4 +144,5 @@ class InsertionOfDataInSpreadsheetTest(unittest.TestCase):
         self.assertEqual(dataInWorksheet, nestedList)
 
 
-unittest.main(testRunner=ColourTextTestRunner())
+if __name__ == '__main__':
+    unittest.main(testRunner=ColourTextTestRunner())
