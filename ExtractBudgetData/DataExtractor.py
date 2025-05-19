@@ -1,127 +1,194 @@
-from pandas import DataFrame
+class TextFile:
+    def __init__(self, content):
+        self.content = content
 
-from ExtractBudgetData.SupportInterfaces.TableConstructor import TableCreator
-from ExtractBudgetData.SupportInterfaces.TypeChecker import TypeChecker
-from ExtractBudgetData.SupportInterfaces.SummaryConstructor import Summary
-
-from GlobalDataObjects import Data
-from ExtractBudgetData.dataTypes import categorizedDataTuples
-
-
-class DataFacade:
-    def __init__(self, flatTextPath: str):
-        self.flatTextPath = flatTextPath
-
-    @staticmethod
-    def categorizedData(textFile) -> categorizedDataTuples:
-        return DataExtractor(textFile).categorizeData()
-
-    def get(self, dataFormat):
-        itemPricePairs = DataFacade.categorizedData(self.flatTextPath)
-        dataCreators = self.dataArtifacts(itemPricePairs)
-        data = {
-            'Formatted': self.formattedData(dataCreators),
-            'Raw': self.rawData(dataCreators),
-        }
-        return data[dataFormat]
-
-    def dataArtifacts(self, itemPricePairs):
-        return {
-            'Table': TableCreator(itemPricePairs),
-            'Summary': Summary(itemPricePairs),
-        }
-
-    def formattedData(self, creator) -> Data:
-        viewTable = creator['Table'].makeTable("view")
-        formattedSummary = creator['Summary'].getFormattedSummary()
-        return Data(viewTable, formattedSummary)
-
-    def rawData(self, creator) -> Data:
-        rawTable = creator['Table'].makeTable("raw")
-        rawSummary = creator['Summary'].getRawSummary()
-        return Data(rawTable, rawSummary)
+    def extractData(self):
+        fileIdentifier = TextFileIdentifier(self.content)
+        return TextFileExtractor(fileIdentifier, self.content).transform()
 
 
-class DataExtractor:
+class TextFileIdentifier:
+    def __init__(self, content):
+        self.content = content
 
-    @staticmethod
-    def getListOfLinesInFile(filePath) -> list[str]:
-        with open(filePath, "r") as file:
-            return file.read().splitlines()
+    def getFileType(self):
+        if self.fileIsCSV():
+            return 'csv'
+        if self.fileContainsNewlineDelimiters():
+            return 'newline'
+        return 'unknown'
 
-    def __init__(self, filePath: str):
-        self.listOfLinesInFile: list[str] = self.getListOfLinesInFile(filePath)
-
-    def categorizeData(self) ->  categorizedDataTuples:
-        listOfLinesInFile = self.listOfLinesInFile
-
-        items: list[str] = list(filter(self._lineComprisesStrings, listOfLinesInFile))
-        pricesRepresentedAsStrings = list(filter(self._lineComprisesNumbers, listOfLinesInFile))
-        cost = Costs(pricesRepresentedAsStrings).get()
-        itemPriceInformation = list(
-            zip(
-                items,
-                cost['Prices'],
-                cost['After-Tax Prices'],
-                cost['Tax Per Item']
-            )
-        )
-
-        return itemPriceInformation
-
-    def _lineComprisesStrings(self, entry: str) -> bool:
-        entryType = TypeChecker(entry).dataType
-        if entryType == "String":
-            return True
+    def fileIsCSV(self):
+        for char in self.content:
+            if char == ',':
+                return True
         return False
 
-    def _lineComprisesNumbers(self, entry: str) -> bool:
-        entryType = TypeChecker(entry).dataType
-        if entryType == "Integer":
-            return True
-        elif entryType == "Decimal":
-            return True
+    def fileContainsNewlineDelimiters(self):
+        for char in self.content:
+            if char == '\n':
+                return True
         return False
 
 
-class Costs:
-    def __init__(self, pricesRepresentedAsStrings: list[str]):
-        self.pricesRepresentedAsStrings = pricesRepresentedAsStrings
-        self.taxRate = 0.13
+class TextFileExtractor:
+    def __init__(self, fileIdentifier, content):
+        self.fileIdentifier = fileIdentifier
+        self.content = content
 
-    def get(self) -> dict[str, list[int | float]]:
-        numericPrices: list[int | float] = list(map(self._convertPricesToNumericDataType, self.pricesRepresentedAsStrings))
-        afterTaxPrices: list[int | float] = list(map( self._calculateAfterTaxPrices, numericPrices))
-        taxPaidPerItem: list[int | float] = self._calculateTaxesPaidPerItem(numericPrices, afterTaxPrices) 
+    def transform(self):
+        typeOfFile = self.fileIdentifier.getFileType()
+        if typeOfFile == 'csv':
+            return self.transformCSVFile()
+        elif typeOfFile == 'newline':
+            return self.transformNewlineFile()
+        else:
+            raise ValueError("Unsupported file type")
 
-        return {
-            'Prices': numericPrices,
-            'After-Tax Prices': afterTaxPrices,
-            'Tax Per Item': taxPaidPerItem,
-        }
+    def transformCSVFile(self):
+        items = self.content.split(',')
+        items = list(map(str.strip, items))
+        items = list(filter(None, items))
+        return self.pairItems(items)
 
-    def _convertPricesToNumericDataType(self, price: str) -> int | float:
-        dataTypeOfPrice = TypeChecker(price).dataType
-        if dataTypeOfPrice == "Integer":
-            return int(price)
-        elif dataTypeOfPrice == "Decimal":
-            return float(price)
-        return 0
+    def transformNewlineFile(self):
+        items = self.content.split('\n')
+        items = list(filter(None, items))
+        return self.pairItems(items)
 
-    def _calculateAfterTaxPrices(self, price: int | float) -> int | float:
-        taxMultiplier = 1 + self.taxRate
-        afterTaxPrice = taxMultiplier * price
-        return afterTaxPrice
+    def pairItems(self, items):
+        pairedData = []
+        for i in range(0, len(items), 2):
+            if i + 1 < len(items):
+                pairedData.append([items[i], items[i + 1]])
+        return pairedData
 
-    def _calculateTaxesPaidPerItem(
-        self,
-        grossPrices: list[int | float],
-        afterTaxPrices: list[int | float],
-    ) -> list[int | float] :
 
-        pricePairs = list(zip(grossPrices, afterTaxPrices))
+class Cost:
+    def __init__(self, items):
+        self.items = items
 
-        calculateTaxPaidPerItem = lambda pricePair: pricePair[1] - pricePair[0]
-        taxesPaidPerItem = list(map(calculateTaxPaidPerItem, pricePairs))
+    def createPriceTable(self, typeOfTable):
+        priceComputer = self.computePriceDetails
+        return CostTable(self.items).createTable(priceComputer, typeOfTable)
 
-        return taxesPaidPerItem
+    def computePriceDetails(self, item):
+        basePriceNumber = int(item[1])
+        taxMultiplier = 1.13
+        priceAfterTax = basePriceNumber * taxMultiplier
+        taxesPaid = priceAfterTax - basePriceNumber
+        return [item[0], basePriceNumber, priceAfterTax, taxesPaid]
+
+
+class CostTable:
+    def __init__(self, items):
+        self.items = items
+        self.table = [['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid']]
+
+    def createTable(self, priceComputer, formatType):
+        itemPriceDetails = list(map(priceComputer, self.items))
+        if formatType == 'raw':
+            self.getRawTable(itemPriceDetails)
+        elif formatType == 'formatted':
+            self.getFormattedTable(itemPriceDetails)
+        return self.table
+
+    def getRawTable(self, itemPriceDetails):
+        self.table.extend(itemPriceDetails)
+
+    def getFormattedTable(self, itemPriceDetails):
+        formattedRows = self.standardizePrices(itemPriceDetails)
+        self.table.extend(formattedRows)
+
+    def standardizePrices(self, priceDetails):
+        formattedRows = []
+        for item in priceDetails:
+            formattedRows.append([
+                item[0],
+                '{0:.2f}'.format(item[1]),
+                '{0:.2f}'.format(item[2]),
+                '{0:.2f}'.format(item[3])
+            ])
+        return formattedRows
+
+
+class CostSummary:
+    def __init__(self, costTable):
+        self.costTable = costTable
+
+    def compute(self, summaryType):
+        if summaryType == 'raw':
+            return self.createRawCostSummary()
+        elif summaryType == 'formatted':
+            return self.createFormattedCostSummary()
+        raise ValueError("Unsupported summary type")
+
+    def createRawCostSummary(self):
+        return CostSummaryRaw(self.costTable).get()
+
+    def createFormattedCostSummary(self):
+        return CostSummaryFormatted(self.costTable).get()
+
+
+class CostSummaryRaw:
+    def __init__(self, costTable):
+        self.costTable = costTable
+
+    def get(self):
+        headers = self.costTable[0]
+        dataRows = self.costTable[1:]
+
+        summaryHeaders = self.transformHeaders(headers)
+        totals = self.createSummaryFromTable(dataRows, headers)
+        roundedTotals = self.standardizeValuesToTwoDecimalPlaces(totals)
+
+        return self.getFinalSummary(summaryHeaders, len(dataRows), roundedTotals)
+
+    def transformHeaders(self, headers):
+        return ["Number of Items"] + [f"Total {h}" for h in headers[1:]]
+
+    def createSummaryFromTable(self, dataRows, headers):
+        totals = [0.0] * (len(headers) - 1)
+        for row in dataRows:
+            for i in range(1, len(row)):
+                totals[i-1] += row[i]
+        return totals
+
+    def standardizeValuesToTwoDecimalPlaces(self, totals):
+        return [round(x, 2) for x in totals]
+
+    def getFinalSummary(self, summaryHeaders, numItems, roundedTotals):
+        summaryData = [numItems] + roundedTotals
+        return [summaryHeaders, summaryData]
+
+
+class CostSummaryFormatted:
+    def __init__(self, costTable):
+        self.costTable = costTable
+
+    def get(self):
+        headers = self.costTable[0]
+        dataRows = self.costTable[1:]
+
+        summaryHeaders = self.transformHeaders(headers)
+        totals = self.createSummaryFromTable(dataRows, headers)
+        formattedValues = self.standardizeValues(totals, len(dataRows))
+
+        return self.getFinalSummary(summaryHeaders, formattedValues)
+
+    def transformHeaders(self, headers):
+        return ["Number of Items" if header == "Item" else f"Total {header}"
+                for header in headers]
+
+    def createSummaryFromTable(self, dataRows, headers):
+        totals = [0.0] * (len(headers) - 1)
+        for row in dataRows:
+            for i in range(1, len(row)):
+                totals[i-1] += float(row[i])
+        return totals
+
+    def standardizeValues(self, totals, itemCount):
+        return [str(itemCount)] + ["{:.2f}".format(total) for total in totals]
+
+    def getFinalSummary(self, summaryHeaders, formattedValues):
+        return [summaryHeaders, formattedValues]
