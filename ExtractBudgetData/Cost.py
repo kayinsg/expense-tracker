@@ -61,7 +61,8 @@ class CostSummary:
         return CostSummaryRaw(self.costTable).get()
 
     def createFormattedCostSummary(self):
-        return CostSummaryFormatted(self.costTable).get()
+        valueStandardizer = ValueStandardizer()
+        return CostSummaryFormatted(valueStandardizer, self.costTable).get()
 
 
 class CostSummaryRaw:
@@ -97,7 +98,8 @@ class CostSummaryRaw:
 
 
 class CostSummaryFormatted:
-    def __init__(self, costTable):
+    def __init__(self, valueStandardizer, costTable):
+        self.valueStandardizer = valueStandardizer
         self.costTable = costTable
 
     def get(self):
@@ -106,7 +108,7 @@ class CostSummaryFormatted:
 
         summaryHeaders = self.transformHeaders(headers)
         totals = self.createSummaryFromTable(dataRows, headers)
-        formattedValues = self.standardizeValues(totals, len(dataRows))
+        formattedValues = self.valueStandardizer.standardize(len(dataRows), totals)
 
         return self.getFinalSummary(summaryHeaders, formattedValues)
 
@@ -121,8 +123,21 @@ class CostSummaryFormatted:
                 totals[i-1] += float(row[i])
         return totals
 
-    def standardizeValues(self, totals, itemCount):
-        return [str(itemCount)] + ["{:.2f}".format(total) for total in totals]
-
     def getFinalSummary(self, summaryHeaders, formattedValues):
         return [summaryHeaders, formattedValues]
+
+
+class ValueStandardizer:
+    def standardize(self, itemCount, totals):
+        standardizedCount = self.standardizeCount(itemCount)
+        standardizedTotals = self.standardizeTotals(totals)
+        return [standardizedCount] + standardizedTotals
+
+    def standardizeCount(self, itemCount):
+        return str(itemCount)
+
+    def standardizeTotals(self, totals):
+        standardized = []
+        for total in totals:
+            standardized.append("{:.2f}".format(total))
+        return standardized
