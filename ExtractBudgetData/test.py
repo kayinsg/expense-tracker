@@ -1,5 +1,6 @@
 import unittest
-from DataExtractorNewSafeCopy import TextFile, TextFileIdentifier , Cost, CostSummary
+from Cost import Cost, CostSummary
+from TextFile import TextFile, TextFileIdentifier
 from colour_runner.runner import ColourTextTestRunner
 
 
