@@ -109,8 +109,7 @@ class CostSummaryFormatted:
         summaryHeaders = self.transformHeaders(headers)
         totals = self.createSummaryFromTable(dataRows, headers)
         formattedValues = self.valueStandardizer.standardize(len(dataRows), totals)
-
-        return self.getFinalSummary(summaryHeaders, formattedValues)
+        return [summaryHeaders, formattedValues]
 
     def transformHeaders(self, headers):
         return ["Number of Items" if header == "Item" else f"Total {header}"
@@ -122,9 +121,6 @@ class CostSummaryFormatted:
             for i in range(1, len(row)):
                 totals[i-1] += float(row[i])
         return totals
-
-    def getFinalSummary(self, summaryHeaders, formattedValues):
-        return [summaryHeaders, formattedValues]
 
 
 class ValueStandardizer:
