@@ -127,7 +127,7 @@ class ValueStandardizer:
     def standardize(self, itemCount, totals):
         standardizedCount = self.standardizeCount(itemCount)
         standardizedTotals = self.standardizeTotals(totals)
-        return [standardizedCount] + standardizedTotals
+        return [ standardizedCount ] + standardizedTotals
 
     def standardizeCount(self, itemCount):
         return str(itemCount)
