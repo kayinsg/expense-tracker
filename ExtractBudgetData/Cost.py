@@ -14,10 +14,10 @@ class CostTable:
     def createTable(self, formatType):
         itemPriceDetails = list(map(self.computePriceDetails, self.items))
         if formatType == 'raw':
-            self.getRawTable(itemPriceDetails)
+            self.completeTable(itemPriceDetails)
         elif formatType == 'formatted':
             formattedRows = self.standardizePrices(itemPriceDetails)
-            self.getFormattedTable(formattedRows)
+            self.completeTable(formattedRows)
         return self.table
 
     def computePriceDetails(self, item):
@@ -27,11 +27,8 @@ class CostTable:
         taxesPaid = priceAfterTax - basePriceNumber
         return [item[0], basePriceNumber, priceAfterTax, taxesPaid]
 
-    def getRawTable(self, itemPriceDetails):
+    def completeTable(self, itemPriceDetails):
         self.table.extend(itemPriceDetails)
-
-    def getFormattedTable(self, formattedRows):
-        self.table.extend(formattedRows)
 
     def standardizePrices(self, priceDetails):
         formattedRows = []
