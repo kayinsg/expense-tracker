@@ -16,8 +16,8 @@ class CostTable:
         if formatType == 'raw':
             self.table.extend(itemPriceDetails)
         elif formatType == 'formatted':
-            formattedRows = self.standardize(itemPriceDetails)
-            self.table.extend(formattedRows)
+            formattedItemPriceDetails = self.standardize(itemPriceDetails)
+            self.table.extend(formattedItemPriceDetails)
         return self.table
 
     def computePriceDetails(self, item):
