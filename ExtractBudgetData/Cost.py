@@ -50,10 +50,11 @@ class CostSummary:
     def __init__(self, costTable):
         self.costTable = costTable
 
-    def compute(self, summaryType):
-        if summaryType == 'raw':
+    def compute(self):
+        typeOfTable = self.typeOfCostTable()
+        if typeOfTable == 'raw':
             return self.createRawCostSummary()
-        elif summaryType == 'formatted':
+        elif typeOfTable == 'formatted':
             return self.createFormattedCostSummary()
         raise ValueError("Unsupported summary type")
 
