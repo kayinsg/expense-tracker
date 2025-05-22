@@ -16,7 +16,7 @@ class CostTable:
         if formatType == 'raw':
             self.completeTable(itemPriceDetails)
         elif formatType == 'formatted':
-            formattedRows = self.standardizePrices(itemPriceDetails)
+            formattedRows = self.standardize(itemPriceDetails)
             self.completeTable(formattedRows)
         return self.table
 
@@ -30,16 +30,15 @@ class CostTable:
     def completeTable(self, itemPriceDetails):
         self.table.extend(itemPriceDetails)
 
-    def standardizePrices(self, priceDetails):
-        formattedRows = []
-        for item in priceDetails:
-            formattedRows.append([
+    def standardize(self, priceDetails):
+        def standardizePrice(item):
+            return [
                 item[0],
                 '{0:.2f}'.format(item[1]),
                 '{0:.2f}'.format(item[2]),
                 '{0:.2f}'.format(item[3])
-            ])
-        return formattedRows
+            ]
+        return list(map(standardizePrice, priceDetails))
 
 
 class CostSummary:
