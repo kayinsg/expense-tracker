@@ -71,20 +71,20 @@ class CostSummaryRaw:
 
     def get(self):
         headers = self.costTable[0]
-        dataRows = self.costTable[1:]
+        items = self.costTable[1:]
 
         summaryHeaders = self.transformHeaders(headers)
-        totals = self.createSummaryFromTable(dataRows, headers)
+        totals = self.createSummaryFromTable(items, headers)
         roundedTotals = self.standardizeValuesToTwoDecimalPlaces(totals)
 
-        return self.getFinalSummary(summaryHeaders, len(dataRows), roundedTotals)
+        return self.getFinalSummary(summaryHeaders, len(items), roundedTotals)
 
     def transformHeaders(self, headers):
         return ["Number of Items"] + [f"Total {h}" for h in headers[1:]]
 
-    def createSummaryFromTable(self, dataRows, headers):
+    def createSummaryFromTable(self, items, headers):
         totals = [0.0] * (len(headers) - 1)
-        for row in dataRows:
+        for row in items:
             for i in range(1, len(row)):
                 totals[i-1] += row[i]
         return totals
@@ -104,20 +104,20 @@ class CostSummaryFormatted:
 
     def get(self):
         headers = self.costTable[0]
-        dataRows = self.costTable[1:]
+        items = self.costTable[1:]
 
         summaryHeaders = self.transformHeaders(headers)
-        totals = self.createSummaryFromTable(dataRows, headers)
-        formattedValues = self.valueStandardizer.standardize(len(dataRows), totals)
+        totals = self.createSummaryFromTable(items, headers)
+        formattedValues = self.valueStandardizer.standardize(len(items), totals)
         return [summaryHeaders, formattedValues]
 
     def transformHeaders(self, headers):
         return ["Number of Items" if header == "Item" else f"Total {header}"
                 for header in headers]
 
-    def createSummaryFromTable(self, dataRows, headers):
+    def createSummaryFromTable(self, items, headers):
         totals = [0.0] * (len(headers) - 1)
-        for row in dataRows:
+        for row in items:
             for i in range(1, len(row)):
                 totals[i-1] += float(row[i])
         return totals
