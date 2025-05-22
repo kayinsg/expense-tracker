@@ -3,15 +3,7 @@ class Cost:
         self.items = items
 
     def createPriceTable(self, typeOfTable):
-        priceComputer = self.computePriceDetails
-        return CostTable(self.items).createTable(priceComputer, typeOfTable)
-
-    def computePriceDetails(self, item):
-        basePriceNumber = int(item[1])
-        taxMultiplier = 1.13
-        priceAfterTax = basePriceNumber * taxMultiplier
-        taxesPaid = priceAfterTax - basePriceNumber
-        return [item[0], basePriceNumber, priceAfterTax, taxesPaid]
+        return CostTable(self.items).createTable(typeOfTable)
 
 
 class CostTable:
@@ -19,13 +11,20 @@ class CostTable:
         self.items = items
         self.table = [['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid']]
 
-    def createTable(self, priceComputer, formatType):
-        itemPriceDetails = list(map(priceComputer, self.items))
+    def createTable(self, formatType):
+        itemPriceDetails = list(map(self.computePriceDetails, self.items))
         if formatType == 'raw':
             self.getRawTable(itemPriceDetails)
         elif formatType == 'formatted':
             self.getFormattedTable(itemPriceDetails)
         return self.table
+
+    def computePriceDetails(self, item):
+        basePriceNumber = int(item[1])
+        taxMultiplier = 1.13
+        priceAfterTax = basePriceNumber * taxMultiplier
+        taxesPaid = priceAfterTax - basePriceNumber
+        return [item[0], basePriceNumber, priceAfterTax, taxesPaid]
 
     def getRawTable(self, itemPriceDetails):
         self.table.extend(itemPriceDetails)
