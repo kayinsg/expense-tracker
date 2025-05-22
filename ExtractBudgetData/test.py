@@ -120,5 +120,34 @@ class CostSummaryTests(unittest.TestCase):
         self.assertEqual(costSummary, expectedCostSummary)
 
 
+    def testShouldIdentifyFormattedTableForCostSummary(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        costTable = [
+            ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
+            ['Boots', '180.00', '203.40', '23.40'],
+            ['Coat', '220.00', '248.60', '28.60'],
+            ['Shirt', '25.00', '28.25', '3.25'],
+        ]
+        costSummary = CostSummary(costTable)
+        # WHEN the following module is executed:
+        typeOfTable = costSummary.typeOfCostTable()
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(typeOfTable, 'formatted')
+
+    def testShouldIdentifyRawTableForCostSummary(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        costTable = [
+            ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
+            ['Boots', 180, 203.39999999999998, 23.399999999999977],
+            ['Coat', 220, 248.59999999999997, 28.599999999999966],
+            ['Shirt', 25, 28.249999999999996, 3.2499999999999964],
+        ]
+        costSummary = CostSummary(costTable)
+        # WHEN the following module is executed:
+        typeOfTable = costSummary.typeOfCostTable()
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(typeOfTable, 'raw')
+
+
 if __name__ == '__main__':
     unittest.main(testRunner=ColourTextTestRunner(verbosity=2))
