@@ -38,29 +38,6 @@ class CostTable:
         return list(map(standardizePrice, priceDetails))
 
 
-class CostSummary:
-    def __init__(self, costTable):
-        self.costTable = costTable
-
-    def compute(self):
-        typeOfTable = self.typeOfCostTable()
-        if typeOfTable == 'raw':
-            return self.createRawCostSummary()
-        elif typeOfTable == 'formatted':
-            return self.createFormattedCostSummary()
-        raise ValueError("Unsupported summary type")
-
-    def typeOfCostTable(self):
-        return TypeOfTable(self.costTable).getTableType()
-
-    def createRawCostSummary(self):
-        return CostSummaryRaw(self.costTable).get()
-
-    def createFormattedCostSummary(self):
-        valueStandardizer = ValueStandardizer()
-        return CostSummaryFormatted(valueStandardizer, self.costTable).get()
-
-
 class TypeOfTable:
     def __init__(self, costTable):
         self.costTable = costTable
@@ -85,6 +62,29 @@ class TypeOfTable:
             return '.' in cell and len(cell.split('.')[1]) == 2
         except ValueError:
             return False
+
+
+class CostSummary:
+    def __init__(self, costTable):
+        self.costTable = costTable
+
+    def compute(self):
+        typeOfTable = self.typeOfCostTable()
+        if typeOfTable == 'raw':
+            return self.createRawCostSummary()
+        elif typeOfTable == 'formatted':
+            return self.createFormattedCostSummary()
+        raise ValueError("Unsupported summary type")
+
+    def typeOfCostTable(self):
+        return TypeOfTable(self.costTable).getTableType()
+
+    def createRawCostSummary(self):
+        return CostSummaryRaw(self.costTable).get()
+
+    def createFormattedCostSummary(self):
+        valueStandardizer = ValueStandardizer()
+        return CostSummaryFormatted(valueStandardizer, self.costTable).get()
 
 
 class CostSummaryRaw:
