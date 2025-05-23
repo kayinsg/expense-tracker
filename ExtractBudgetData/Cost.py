@@ -93,6 +93,9 @@ class CostSummaryInterface:
         self.headers = self.costTable[0]
         self.items = self.costTable[1:]
 
+    def transformHeaders(self, headers):
+        return ["Number of Items"] + [f"Total {h}" for h in headers[1:]]
+
 
 class CostSummaryRaw(CostSummaryInterface):
     def __init__(self, costTable):
@@ -104,9 +107,6 @@ class CostSummaryRaw(CostSummaryInterface):
         roundedTotals = self.standardizeValuesToTwoDecimalPlaces(totals)
 
         return self.getFinalSummary(summaryHeaders, len(self.items), roundedTotals)
-
-    def transformHeaders(self, headers):
-        return ["Number of Items"] + [f"Total {h}" for h in headers[1:]]
 
     def createSummaryFromTable(self, items, headers):
         totals = [0.0] * (len(headers) - 1)
@@ -133,10 +133,6 @@ class CostSummaryFormatted(CostSummaryInterface):
         totals = self.createSummaryFromTable(self.items, self.headers)
         formattedValues = self.valueStandardizer.standardize(len(self.items), totals)
         return [summaryHeaders, formattedValues]
-
-    def transformHeaders(self, headers):
-        return ["Number of Items" if header == "Item" else f"Total {header}"
-                for header in headers]
 
     def createSummaryFromTable(self, items, headers):
         totals = [0.0] * (len(headers) - 1)
