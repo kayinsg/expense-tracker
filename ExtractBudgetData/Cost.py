@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 class Cost:
     def __init__(self, items):
         self.items = items
@@ -87,11 +89,17 @@ class CostSummary:
         return CostSummaryFormatted(self.costTable, valueStandardizer).get()
 
 
-class CostSummaryInterface:
+class CostSummaryInterface(ABC):
     def __init__(self, costTable):
         self.costTable = costTable
         self.headers = self.costTable[0]
         self.items = self.costTable[1:]
+
+    @abstractmethod
+    def createSummaryFromTable(self, items, headers):
+        raise NotImplementedError(
+            "This method must be used by concrete implementations"
+        )
 
     def transformHeaders(self, headers):
         return ["Number of Items"] + [f"Total {h}" for h in headers[1:]]
@@ -123,6 +131,22 @@ class CostSummaryRaw(CostSummaryInterface):
         return [summaryHeaders, summaryData]
 
 
+class ValueStandardizer:
+    def standardize(self, itemCount, totals):
+        standardizedCount = self.standardizeCount(itemCount)
+        standardizedTotals = self.standardizeTotals(totals)
+        return [ standardizedCount ] + standardizedTotals
+
+    def standardizeCount(self, itemCount):
+        return str(itemCount)
+
+    def standardizeTotals(self, totals):
+        standardized = []
+        for total in totals:
+            standardized.append("{:.2f}".format(total))
+        return standardized
+
+
 class CostSummaryFormatted(CostSummaryInterface):
     def __init__(self, costTable, valueStandardizer):
         super().__init__(costTable)
@@ -140,19 +164,3 @@ class CostSummaryFormatted(CostSummaryInterface):
             for i in range(1, len(row)):
                 totals[i-1] += float(row[i])
         return totals
-
-
-class ValueStandardizer:
-    def standardize(self, itemCount, totals):
-        standardizedCount = self.standardizeCount(itemCount)
-        standardizedTotals = self.standardizeTotals(totals)
-        return [ standardizedCount ] + standardizedTotals
-
-    def standardizeCount(self, itemCount):
-        return str(itemCount)
-
-    def standardizeTotals(self, totals):
-        standardized = []
-        for total in totals:
-            standardized.append("{:.2f}".format(total))
-        return standardized
