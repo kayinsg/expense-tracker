@@ -84,22 +84,26 @@ class CostSummary:
 
     def createFormattedCostSummary(self):
         valueStandardizer = ValueStandardizer()
-        return CostSummaryFormatted(valueStandardizer, self.costTable).get()
+        return CostSummaryFormatted(self.costTable, valueStandardizer).get()
 
 
-class CostSummaryRaw:
+class CostSummaryInterface:
     def __init__(self, costTable):
         self.costTable = costTable
+        self.headers = self.costTable[0]
+        self.items = self.costTable[1:]
+
+
+class CostSummaryRaw(CostSummaryInterface):
+    def __init__(self, costTable):
+        super().__init__(costTable)
 
     def get(self):
-        headers = self.costTable[0]
-        items = self.costTable[1:]
-
-        summaryHeaders = self.transformHeaders(headers)
-        totals = self.createSummaryFromTable(items, headers)
+        summaryHeaders = self.transformHeaders(self.headers)
+        totals = self.createSummaryFromTable(self.items, self.headers)
         roundedTotals = self.standardizeValuesToTwoDecimalPlaces(totals)
 
-        return self.getFinalSummary(summaryHeaders, len(items), roundedTotals)
+        return self.getFinalSummary(summaryHeaders, len(self.items), roundedTotals)
 
     def transformHeaders(self, headers):
         return ["Number of Items"] + [f"Total {h}" for h in headers[1:]]
@@ -119,24 +123,16 @@ class CostSummaryRaw:
         return [summaryHeaders, summaryData]
 
 
-class CostSummaryFormatted:
-    def __init__(self, valueStandardizer, costTable):
+class CostSummaryFormatted(CostSummaryInterface):
+    def __init__(self, costTable, valueStandardizer):
+        super().__init__(costTable)
         self.valueStandardizer = valueStandardizer
-        self.costTable = costTable
 
     def get(self):
-        costTableDetails = self.extractTableDetails()
-        summaryHeaders = self.transformHeaders(costTableDetails['headers'])
-        totals = self.createSummaryFromTable(costTableDetails['items'], costTableDetails['headers'])
-        formattedValues = self.valueStandardizer.standardize(len(costTableDetails['items']), totals)
+        summaryHeaders = self.transformHeaders(self.headers)
+        totals = self.createSummaryFromTable(self.items, self.headers)
+        formattedValues = self.valueStandardizer.standardize(len(self.items), totals)
         return [summaryHeaders, formattedValues]
-
-
-    def extractTableDetails(self):
-        return {
-            'headers': self.costTable[0],
-            'items':self.costTable[1:],
-        }
 
     def transformHeaders(self, headers):
         return ["Number of Items" if header == "Item" else f"Total {header}"
