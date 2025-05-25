@@ -90,9 +90,9 @@ class CostTableTests(unittest.TestCase):
         cost = Cost(items)
         expectedResult = [
             ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
-            ['Boots', '180.00', '203.40', '23.40'],
-            ['Coat', '220.00', '248.60', '28.60'],
-            ['Shirt', '25.00', '28.25', '3.25'],
+            ['Boots', '$180.00', '$203.40', '$23.40'],
+            ['Coat', '$220.00', '$248.60', '$28.60'],
+            ['Shirt', '$25.00', '$28.25', '$3.25'],
         ]
         # WHEN the following module is executed:
         priceTable = cost.createPriceTable('formatted')
@@ -124,13 +124,13 @@ class CostSummaryTests(unittest.TestCase):
         # GIVEN the following preconditions corresponding to the system under test:
         costTable = [
             ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
-            ['Boots', '180.00', '203.40', '23.40'],
-            ['Coat', '220.00', '248.60', '28.60'],
-            ['Shirt', '25.00', '28.25', '3.25'],
+            ['Boots', '$180.00', '$203.40', '$23.40'],
+            ['Coat', '$220.00', '$248.60', '$28.60'],
+            ['Shirt', '$25.00', '$28.25', '$3.25'],
         ]
         expectedCostSummary = [
             ['Number of Items', 'Total Gross Price', 'Total Price After Tax', 'Total Taxes Paid'],
-            ['3', '425.00', '480.25', '55.25']
+            ['3', '$425.00', '$480.25', '$55.25']
         ]
         # WHEN the following module is executed:
         costSummary = CostSummary(costTable).compute()
@@ -142,9 +142,9 @@ class CostSummaryTests(unittest.TestCase):
         # GIVEN the following preconditions corresponding to the system under test:
         costTable = [
             ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
-            ['Boots', '180.00', '203.40', '23.40'],
-            ['Coat', '220.00', '248.60', '28.60'],
-            ['Shirt', '25.00', '28.25', '3.25'],
+            ['Boots', '$180.00', '$203.40', '$23.40'],
+            ['Coat', '$220.00', '$248.60', '$28.60'],
+            ['Shirt', '$25.00', '$28.25', '$3.25'],
         ]
         costSummary = CostSummary(costTable)
         # WHEN the following module is executed:

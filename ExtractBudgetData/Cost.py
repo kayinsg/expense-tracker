@@ -33,9 +33,9 @@ class CostTable:
         def standardizePrice(item):
             return [
                 item[0],
-                '{0:.2f}'.format(item[1]),
-                '{0:.2f}'.format(item[2]),
-                '{0:.2f}'.format(item[3])
+                '${0:.2f}'.format(item[1]),
+                '${0:.2f}'.format(item[2]),
+                '${0:.2f}'.format(item[3])
             ]
         return list(map(standardizePrice, priceDetails))
 
@@ -60,8 +60,7 @@ class TypeOfTable:
         if not isinstance(cell, str):
             return False
         try:
-            float(cell)
-            return '.' in cell and len(cell.split('.')[1]) == 2
+            return '$' in cell
         except ValueError:
             return False
 
@@ -143,7 +142,7 @@ class ValueStandardizer:
     def standardizeTotals(self, totals):
         standardized = []
         for total in totals:
-            standardized.append("{:.2f}".format(total))
+            standardized.append("${:.2f}".format(total))
         return standardized
 
 
@@ -162,5 +161,7 @@ class CostSummaryFormatted(CostSummaryInterface):
         totals = [0.0] * (len(headers) - 1)
         for row in items:
             for i in range(1, len(row)):
-                totals[i-1] += float(row[i])
+                plainDollarValue = row[i].replace('$', '')
+                dollarValue = float(plainDollarValue)
+                totals[i-1] += dollarValue
         return totals
