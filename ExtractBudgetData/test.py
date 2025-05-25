@@ -115,7 +115,7 @@ class CostSummaryTests(unittest.TestCase):
             [3, 425, 480.25, 55.25]
         ]
         # WHEN the following module is executed:
-        costSummary = CostSummary(costTable).compute()
+        costSummary = Cost("").createPriceSummary(costTable)
         # THEN the observable behavior should be verified as stated below:
         self.assertEqual(costSummary, expectedCostSummary)
 
@@ -133,7 +133,7 @@ class CostSummaryTests(unittest.TestCase):
             ['3', '$425.00', '$480.25', '$55.25']
         ]
         # WHEN the following module is executed:
-        costSummary = CostSummary(costTable).compute()
+        costSummary = Cost("").createPriceSummary(costTable)
         # THEN the observable behavior should be verified as stated below:
         self.assertEqual(costSummary, expectedCostSummary)
 
