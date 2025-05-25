@@ -4,6 +4,14 @@ class Cost:
     def __init__(self, items):
         self.items = items
 
+    def getDetails(self, formatType):
+        priceTable = self.createPriceTable(formatType)
+        priceSummary = self.createPriceSummary(priceTable)
+        return priceSummary
+
+    def createPriceSummary(self, priceTable):
+        return CostSummary(priceTable).compute()
+
     def createPriceTable(self, typeOfTable):
         return CostTable(self.items).createTable(typeOfTable)
 
