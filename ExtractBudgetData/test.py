@@ -4,14 +4,19 @@ from TextFile import TextFile, TextFileIdentifier
 from colour_runner.runner import ColourTextTestRunner
 
 
-class DataExtractorTests(unittest.TestCase):
+class NewlineFileDataExtractorTests(unittest.TestCase):
 
-    def setUp(self):
-        self.maxDiff = None
+    class FakeNewlineTextFile(TextFile):
+        def __init__(self,filePath):
+            self.filePath = filePath
+
+        def getDataFromFile(self):
+            return 'A Shoes From New York\n40\nMug\n2\nSweater\n40'
 
     def testShouldIdentifyFlatTextFileWithNewlines(self):
         # GIVEN the following preconditions corresponding to the system under test:
-        textFile = "A Shoes From New York\n40\nMug\n2\nSweater\n40"
+        filePath = None
+        textFile = self.FakeNewlineTextFile(filePath).getDataFromFile()
         textFileModule = TextFileIdentifier(textFile)
         expectedExtractedData = [['A Shoes From New York', '40'], ['Mug', '2'], ['Sweater', '40']]
         # WHEN the following module is executed:
@@ -19,30 +24,43 @@ class DataExtractorTests(unittest.TestCase):
         # THEN the observable behavior should be verified as stated below:
         self.assertEqual(fileType, 'newline')
 
-    def testShouldIdentifyCSVFile(self):
-        # GIVEN the following preconditions corresponding to the system under test:
-        textFile = "Laptop, 400, Desk, 220, Headphones, 120"
-        textFileModule = TextFileIdentifier(textFile)
-        # WHEN the following module is executed:
-        fileType = textFileModule.getFileType()
-        # THEN the observable behavior should be verified as stated below:
-        self.assertEqual(fileType, 'csv')
-
     def testShouldExtractTextFromFlatTextFileWithNewlines(self):
         # GIVEN the following preconditions corresponding to the system under test:
         textFile = "A Shoes From New York\n40\nMug\n2\nSweater\n40"
-        textFileModule = TextFile(textFile)
+        textFileModule = self.FakeNewlineTextFile(textFile)
         expectedExtractedData = [['A Shoes From New York', '40'], ['Mug', '2'], ['Sweater', '40']]
         # WHEN the following module is executed:
         extractedData = textFileModule.extractData()
         # THEN the observable behavior should be verified as stated below:
         self.assertEqual(extractedData, expectedExtractedData)
 
+
+class CSVFileDataExtractorTests(unittest.TestCase):
+
+    class FakeCSVTextFile(TextFile):
+        def __init__(self,filePath):
+            self.filePath = filePath
+
+        def getDataFromFile(self):
+            return 'Laptop, 400, Desk, 220, Headphones, 120'
+
+    def setUp(self):
+        self.maxDiff = None
+
+    def testShouldIdentifyCSVFile(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        textFile = 'Laptop, 400, Desk, 220, Headphones, 120'
+        textFileModule = TextFileIdentifier(textFile)
+        # WHEN the following module is executed:
+        fileType = textFileModule.getFileType()
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(fileType, 'csv')
+
     def testShouldExtractTextFromCSVFlatTextFile(self):
         # GIVEN the following preconditions corresponding to the system under test:
         textFile = "Laptop, 400, Desk, 220, Headphones, 120"
         expectedExtractedData = [['Laptop', '400'], ['Desk', '220'], ['Headphones', '120']]
-        textFileModule = TextFile(textFile)
+        textFileModule = self.FakeCSVTextFile(textFile)
         # WHEN the following module is executed:
         extractedData = textFileModule.extractData()
         # THEN the observable behavior should be verified as stated below:
