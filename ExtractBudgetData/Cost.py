@@ -7,13 +7,19 @@ class Cost:
     def getDetails(self, formatType):
         priceTable = self.createPriceTable(formatType)
         priceSummary = self.createPriceSummary(priceTable)
-        return priceSummary
+        return self.consolidatePriceInfo(priceTable, priceSummary)
+
+    def createPriceTable(self, typeOfTable):
+        return CostTable(self.items).createTable(typeOfTable)
 
     def createPriceSummary(self, priceTable):
         return CostSummary(priceTable).compute()
 
-    def createPriceTable(self, typeOfTable):
-        return CostTable(self.items).createTable(typeOfTable)
+    def consolidatePriceInfo(self, costTable, costSummary):
+        consolidated = []
+        consolidated.extend(costTable)
+        consolidated.extend(costSummary)
+        return consolidated
 
 
 class CostTable:
