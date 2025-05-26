@@ -4,7 +4,7 @@ class Cost:
     def __init__(self, items):
         self.items = items
 
-    def getDetails(self, formatType):
+    def getBudgetInfo(self, formatType):
         priceTable = self.createPriceTable(formatType)
         priceSummary = self.createPriceSummary(priceTable)
         return self.consolidatePriceInfo(priceTable, priceSummary)
