@@ -114,14 +114,6 @@ class InsertionOfDataInSpreadsheetTest(unittest.TestCase):
                 data.append(list(row))
             return data
 
-        def getDataFrame() -> pandas.DataFrame:
-            data = {'Items': ['Candy', 'Orange', 'Chips'], 'Gross Price': [ 1.0, 1.5, 1.99 ], 'Final Price': [1.13, 1.76, 2.13 ], 'Taxes Paid': [ 0.13, 0.25, 0.35 ]}
-            return pandas.DataFrame(data)
-
-        def getSeries()-> pandas.Series:
-            data = {'Total Items': 3, 'Total Gross Price':4.49, 'Total Final Price':5.02, 'Total Taxes Paid': 0.73}
-            return pandas.Series(data)
-
         def getNestedList():
             return [
                 ['Items', 'Gross Price', 'Final Price', 'Taxes Paid'],
@@ -134,11 +126,9 @@ class InsertionOfDataInSpreadsheetTest(unittest.TestCase):
 
         workbook = Workbook()
         worksheetName = 'Sheet 1'
-        dataFrame = getDataFrame()
-        series = getSeries()
         nestedList = getNestedList()
 
-        workbookWithData = WorksheetDataDepositor(workbook, worksheetName).insert(dataFrame, series)
+        workbookWithData = WorksheetDataDepositor(workbook, worksheetName).insert(nestedList)
         dataInWorksheet = getSheetData(workbookWithData, worksheetName)
 
         self.assertEqual(dataInWorksheet, nestedList)
