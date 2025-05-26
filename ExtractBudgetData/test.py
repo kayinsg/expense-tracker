@@ -167,5 +167,35 @@ class CostSummaryTests(unittest.TestCase):
         self.assertEqual(typeOfTable, 'raw')
 
 
+class SummaryTableConsolidatorTests(unittest.TestCase):
+
+    def testShouldConsolidateCostDetailsGivenTableAndSummary(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        costTable = [
+            ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
+            ['Boots', '$180.00', '$203.40', '$23.40'],
+            ['Coat', '$220.00', '$248.60', '$28.60'],
+            ['Shirt', '$25.00', '$28.25', '$3.25'],
+        ]
+        costSummary = [
+            ['Number of Items', 'Total Gross Price', 'Total Price After Tax', 'Total Taxes Paid'],
+            ['3', '$425.00', '$480.25', '$55.25']
+        ]
+        cost = Cost("")
+        expectedResult = [
+            ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
+            ['Boots', '$180.00', '$203.40', '$23.40'],
+            ['Coat', '$220.00', '$248.60', '$28.60'],
+            ['Shirt', '$25.00', '$28.25', '$3.25'],
+            ['Number of Items', 'Total Gross Price', 'Total Price After Tax', 'Total Taxes Paid'],
+            ['3', '$425.00', '$480.25', '$55.25']
+        ]
+        # WHEN the following module is executed:
+        actualResult = cost.consolidatePriceInfo(costTable, costSummary)
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(actualResult, expectedResult)
+
+        
+
 if __name__ == '__main__':
     unittest.main(testRunner=ColourTextTestRunner(verbosity=2))
