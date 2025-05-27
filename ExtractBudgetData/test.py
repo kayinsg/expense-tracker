@@ -15,24 +15,21 @@ class NewlineFileDataExtractorTests(unittest.TestCase):
 
     def testShouldIdentifyFlatTextFileWithNewlines(self):
         # GIVEN the following preconditions corresponding to the system under test:
-        filePath = None
-        textFile = self.FakeNewlineTextFile(filePath).getDataFromFile()
-        textFileModule = TextFileIdentifier(textFile)
-        expectedExtractedData = [['A Shoes From New York', '40'], ['Mug', '2'], ['Sweater', '40']]
+        textFileData = self.FakeNewlineTextFile("").getDataFromFile()
+        textFileIdentifier = TextFileIdentifier(textFileData)
         # WHEN the following module is executed:
-        fileType = textFileModule.getFileType()
+        result = textFileIdentifier.getFileType()
         # THEN the observable behavior should be verified as stated below:
-        self.assertEqual(fileType, 'newline')
+        self.assertEqual(result, 'newline')
 
     def testShouldExtractTextFromFlatTextFileWithNewlines(self):
         # GIVEN the following preconditions corresponding to the system under test:
-        textFile = "A Shoes From New York\n40\nMug\n2\nSweater\n40"
-        textFileModule = self.FakeNewlineTextFile(textFile)
-        expectedExtractedData = [['A Shoes From New York', '40'], ['Mug', '2'], ['Sweater', '40']]
+        textFileModule = self.FakeNewlineTextFile("")
+        expected = [['A Shoes From New York', '40'], ['Mug', '2'], ['Sweater', '40']]
         # WHEN the following module is executed:
-        extractedData = textFileModule.extractData()
+        actual = textFileModule.extractData()
         # THEN the observable behavior should be verified as stated below:
-        self.assertEqual(extractedData, expectedExtractedData)
+        self.assertEqual(expected, actual)
 
 
 class CSVFileDataExtractorTests(unittest.TestCase):
@@ -44,27 +41,23 @@ class CSVFileDataExtractorTests(unittest.TestCase):
         def getDataFromFile(self):
             return 'Laptop, 400, Desk, 220, Headphones, 120'
 
-    def setUp(self):
-        self.maxDiff = None
-
     def testShouldIdentifyCSVFile(self):
         # GIVEN the following preconditions corresponding to the system under test:
-        textFile = 'Laptop, 400, Desk, 220, Headphones, 120'
-        textFileModule = TextFileIdentifier(textFile)
+        textFileData = self.FakeCSVTextFile("").getDataFromFile()
+        textFileModule = TextFileIdentifier(textFileData)
         # WHEN the following module is executed:
-        fileType = textFileModule.getFileType()
+        result = textFileModule.getFileType()
         # THEN the observable behavior should be verified as stated below:
-        self.assertEqual(fileType, 'csv')
+        self.assertEqual(result, 'csv')
 
     def testShouldExtractTextFromCSVFlatTextFile(self):
         # GIVEN the following preconditions corresponding to the system under test:
-        textFile = "Laptop, 400, Desk, 220, Headphones, 120"
-        expectedExtractedData = [['Laptop', '400'], ['Desk', '220'], ['Headphones', '120']]
-        textFileModule = self.FakeCSVTextFile(textFile)
+        textFileModule = self.FakeCSVTextFile("")
+        expected = [['Laptop', '400'], ['Desk', '220'], ['Headphones', '120']]
         # WHEN the following module is executed:
-        extractedData = textFileModule.extractData()
+        actual = textFileModule.extractData()
         # THEN the observable behavior should be verified as stated below:
-        self.assertEqual(extractedData, expectedExtractedData)
+        self.assertEqual(actual, expected)
 
 
 class CostTableTests(unittest.TestCase):
