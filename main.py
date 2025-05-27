@@ -1,4 +1,3 @@
-from ExtractBudgetData.DataExtractor import DataFacade
 from UpdateSpreadsheet.SpreadsheetFormatter import SpreadsheetFormatter
 from paths import flatTextFile, saveDirectoryForSpreadsheets
 import pendulum
