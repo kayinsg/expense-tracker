@@ -67,36 +67,36 @@ class FileIdentifierTests(unittest.TestCase):
 
 
 class CostTableTests(unittest.TestCase):
+    def setUp(self):
+        self.items = [['Boots', '180',], ['Coat', '220'], ['Shirt', '25']]
 
     def testShouldCreateRawPriceTable(self):
         # GIVEN the following preconditions corresponding to the system under test:
-        items = [['Boots', '180',], ['Coat', '220'], ['Shirt', '25']]
-        cost = Cost(items)
-        expectedPriceTable = [
+        cost = Cost(self.items)
+        expected = [
             ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
             ['Boots', 180, 203.39999999999998, 23.399999999999977],
             ['Coat', 220, 248.59999999999997, 28.599999999999966],
             ['Shirt', 25, 28.249999999999996, 3.2499999999999964],
         ]
         # WHEN the following module is executed:
-        priceTable = cost.createPriceTable('raw')
+        actual = cost.createPriceTable('raw')
         # THEN the observable behavior should be verified as stated below:
-        self.assertEqual(expectedPriceTable, priceTable)
+        self.assertEqual(expected, actual)
 
     def testShouldCreateBeautifiedPriceTable(self):
         # GIVEN the following preconditions corresponding to the system under test:
-        items = [['Boots', '180',], ['Coat', '220'], ['Shirt', '25']]
-        cost = Cost(items)
-        expectedResult = [
+        cost = Cost(self.items)
+        expected = [
             ['Item', 'Gross Price', 'Price After Tax', 'Taxes Paid'],
             ['Boots', '$180.00', '$203.40', '$23.40'],
             ['Coat', '$220.00', '$248.60', '$28.60'],
             ['Shirt', '$25.00', '$28.25', '$3.25'],
         ]
         # WHEN the following module is executed:
-        priceTable = cost.createPriceTable('formatted')
+        actual = cost.createPriceTable('formatted')
         # THEN the observable behavior should be verified as stated below:
-        self.assertEqual(priceTable, expectedResult)
+        self.assertEqual(expected, actual)
 
 
 class CostSummaryTests(unittest.TestCase):
