@@ -39,6 +39,33 @@ class FileDataExtractorTests(unittest.TestCase):
         self.assertEqual(expected, actual)
 
 
+class FileIdentifierTests(unittest.TestCase):
+
+    def getTextFileData(self, type):
+        if type == 'csv':
+            return 'Laptop, 400, Desk, 220, Headphones, 120'
+        if type == 'newline':
+            return 'A Shoes From New York\n40\nMug\n2\nSweater\n40'
+
+    def testShouldIdentifyFlatTextFileWithNewlines(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        textFileData = self.getTextFileData('newline')
+        textFileIdentifier = TextFileIdentifier(textFileData)
+        # WHEN the following module is executed:
+        result = textFileIdentifier.getFileType()
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(result, 'newline')
+
+    def testShouldIdentifyCSVFile(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        textFileData = self.getTextFileData('csv')
+        textFileModule = TextFileIdentifier(textFileData)
+        # WHEN the following module is executed:
+        result = textFileModule.getFileType()
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(result, 'csv')
+
+
 class CostTableTests(unittest.TestCase):
 
     def testShouldCreateRawPriceTable(self):
