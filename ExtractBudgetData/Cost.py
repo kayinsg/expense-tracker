@@ -37,11 +37,18 @@ class CostTable:
         return self.table
 
     def computePriceDetails(self, item):
-        basePriceNumber = int(item[1])
-        taxMultiplier = 1.13
-        priceAfterTax = basePriceNumber * taxMultiplier
-        taxesPaid = priceAfterTax - basePriceNumber
-        return [item[0], basePriceNumber, priceAfterTax, taxesPaid]
+        try:
+            basePriceNumber = int(item[1])
+            taxMultiplier = 1.13
+            priceAfterTax = basePriceNumber * taxMultiplier
+            taxesPaid = priceAfterTax - basePriceNumber
+            return [item[0], basePriceNumber, priceAfterTax, taxesPaid]
+        except ValueError:
+            basePriceNumber = float(item[1])
+            taxMultiplier = 1.13
+            priceAfterTax = basePriceNumber * taxMultiplier
+            taxesPaid = priceAfterTax - basePriceNumber
+            return [item[0], basePriceNumber, priceAfterTax, taxesPaid]
 
     def standardize(self, priceDetails):
         def standardizePrice(item):
