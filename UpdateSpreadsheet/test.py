@@ -62,14 +62,6 @@ class SpreadsheetFileSystemTest(unittest.TestCase):
 class WorksheetPopulationTest(unittest.TestCase):
 
         @staticmethod
-        def firstDayOfWeek(weekDays):
-            return weekDays[0].format('dddd')
-
-        @staticmethod
-        def lastDayOfWeek(weekDays):
-            return weekDays[-1].format('dddd')
-
-        @staticmethod
         def getWorkbook():
             return Workbook()
 
