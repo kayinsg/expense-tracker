@@ -6,6 +6,7 @@ import pendulum
 from colour_runner.runner import ColourTextTestRunner
 import pandas
 from WorksheetWriter import WorksheetDataDepositor
+from DateTranslator import getCurrentDateObject
 
 
 class SpreadsheetFileSystemTest(unittest.TestCase):
@@ -126,5 +127,26 @@ class InsertionOfDataInSpreadsheetTest(unittest.TestCase):
         self.assertEqual(dataInWorksheet, nestedList)
 
 
+class DateConversionTests(unittest.TestCase):
+
+    def getFakeDateFromPendulum(self):
+        return '2025-03-23'
+
+    def testShouldConvertISODateToSpreadsheetDate(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        expectedResult = 'Mar.23.2025'
+        # WHEN the following module is executed:
+        actualResult = getCurrentDateObject(self.getFakeDateFromPendulum)
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(actualResult.spreadsheet, expectedResult)
+
+    def testShouldConvertSpreadsheetDateToISO(self):
+        # GIVEN the following preconditions corresponding to the system under test:
+        expectedResult = '2025-03-23'
+        # WHEN the following module is executed:
+        actualResult = getCurrentDateObject(self.getFakeDateFromPendulum)
+        # THEN the observable behavior should be verified as stated below:
+        self.assertEqual(actualResult.iso, expectedResult)
+
 if __name__ == '__main__':
-    unittest.main(testRunner=ColourTextTestRunner())
+    unittest.main(testRunner=ColourTextTestRunner(), verbosity=2)
